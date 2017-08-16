@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  monty:
+    build: .
+    image: lycantropos/monty:latest
+    volumes:
+      - .:/monty/
+    entrypoint: python3
+    command: setup.py test
+    extra_hosts:
+      - "dockerhost:$DOCKERHOST"  # for debugging
