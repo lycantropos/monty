@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  monty:
+  __project__:
     build: .
-    image: lycantropos/monty:latest
+    image: __dockerhub_login__/__project__:0.0.0
     volumes:
-      - .:/monty/
+      - .:/opt/__project__/
     entrypoint: python3
     command: setup.py test
     extra_hosts:
