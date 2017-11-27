@@ -2,7 +2,10 @@ version: '3'
 
 services:
   __project__:
-    build: .
+    build:
+      context: .
+      args:
+        - PYTHON3_VERSION=${PYTHON3_VERSION}
     image: __dockerhub_login__/__project__:0.0.0
     volumes:
       - .:/opt/__project__/

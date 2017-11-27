@@ -2,7 +2,10 @@ version: '3'
 
 services:
   monty:
-    build: .
+    build:
+      context: .
+      args:
+        - PYTHON3_VERSION=${PYTHON3_VERSION}
     image: lycantropos/monty:0.0.0
     volumes:
       - ./template:/opt/monty/template

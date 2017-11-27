@@ -1,12 +1,13 @@
-ARG PYTHON3_VERSION="3"
+ARG PYTHON3_VERSION
 
 FROM python:${PYTHON3_VERSION}
 
 WORKDIR /opt/__project__
 
-COPY ./__project__ __project__
-COPY ./tests tests
-COPY ./setup.py setup.py
-COPY ./setup.cfg setup.cfg
+COPY __project__/ __project__/
+COPY tests/ tests/
+COPY README.rst .
+COPY setup.py .
+COPY setup.cfg .
 
 RUN python3 -m pip install .
