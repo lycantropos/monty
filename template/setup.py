@@ -8,7 +8,7 @@ project_base_url = 'https://github.com/__github_login__/__project__/'
 setup(name=PROJECT_NAME,
       packages=find_packages(exclude=('tests',)),
       version=__project__.__version__,
-      description='Python project template.',
+      description=__project__.__doc__,
       long_description=open('README.rst').read(),
       author='__full_name__',
       author_email='__email__',
