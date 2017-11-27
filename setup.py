@@ -19,7 +19,7 @@ setup(name='montemplate',
       ],
       tests_require=[
           'pydevd>=1.1.1',  # debugging
-          'pytest>=3.2.5',
+          'pytest>=3.2.1',
           'pytest-cov>=2.5.1',
           'hypothesis>=3.38.5',
       ])
