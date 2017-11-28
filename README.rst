@@ -14,8 +14,10 @@ monty
 In what follows ``python3`` is an alias for ``python3.5``
 or any later version (``python3.6`` and so on).
 
+------------
 Installation
 ------------
+
 Install the latest ``pip`` & ``setuptools`` packages versions
 
 .. code-block:: bash
@@ -23,7 +25,8 @@ Install the latest ``pip`` & ``setuptools`` packages versions
   python3 -m pip install --upgrade pip setuptools
 
 Release
-~~~~~~~
+-------
+
 Download and install the latest stable version from ``PyPI`` repository
 
 .. code-block:: bash
@@ -31,7 +34,8 @@ Download and install the latest stable version from ``PyPI`` repository
   python3 -m pip install --upgrade montemplate
 
 Developer
-~~~~~~~~~
+---------
+
 Download and install the latest version from ``GitHub`` repository
 
 .. code-block:: bash
@@ -40,8 +44,13 @@ Download and install the latest version from ``GitHub`` repository
   cd monty
   python3 setup.py install
 
+-----------
+Development
+-----------
+
 Bumping version
 ---------------
+
 Install `bumpversion <https://github.com/peritus/bumpversion#installation>`__.
 
 Choose which version number category to bump following `semver specification <http://semver.org/>`__.
