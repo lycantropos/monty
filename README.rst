@@ -8,6 +8,9 @@ monty
 .. image:: https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/lycantropos/monty
 
+.. image:: https://badge.fury.io/py/montemplate.svg
+  :target: https://badge.fury.io/py/montemplate
+
 In what follows ``python3`` is an alias for ``python3.5``
 or any later version (``python3.6`` and so on).
 
