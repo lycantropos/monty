@@ -47,7 +47,7 @@ Test bumping version
 
 .. code-block:: bash
 
-    bumpversion --dry-run --verbose $VERSION
+  bumpversion --dry-run --verbose $VERSION
 
 where ``$VERSION`` is the target version number category name,
 possible values are ``patch``/``minor``/``major``.
@@ -56,7 +56,7 @@ Bump version
 
 .. code-block:: bash
 
-    bumpversion --verbose $VERSION
+  bumpversion --verbose $VERSION
 
 **Note**: to avoid inconsistency between branches and pull requests,
 bumping version should be merged into ``master`` branch as separate pull request.
@@ -67,22 +67,22 @@ Plain
 
 .. code-block:: bash
 
-    python3 setup.py test
+  python3 setup.py test
 
 Inside ``Docker`` container
 
 .. code-block:: bash
 
-    docker-compose up
+  docker-compose up
 
 Inside ``Docker`` container with remote debugger
 
 .. code-block:: bash
 
-    ./set-dockerhost.sh docker-compose up
+  ./set-dockerhost.sh docker-compose up
 
 Bash script (e.g. can be used in ``Git`` hooks)
 
 .. code-block:: bash
 
-    ./run-tests.sh
+  ./run-tests.sh
