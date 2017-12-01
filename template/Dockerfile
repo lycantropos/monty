@@ -10,4 +10,4 @@ COPY README.rst .
 COPY setup.py .
 COPY setup.cfg .
 
-RUN python3 -m pip install .
+RUN python3 -m pip install -e .

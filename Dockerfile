@@ -11,4 +11,4 @@ COPY setup.py .
 COPY setup.cfg .
 COPY scripts/ scripts/
 
-RUN python3 -m pip install .
+RUN python3 -m pip install -e .
