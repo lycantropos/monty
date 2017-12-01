@@ -111,6 +111,9 @@ def main(version: bool,
         sys.stdout.write(__version__)
         return
 
+    template_dir = os.path.normpath(template_dir)
+    output_dir = os.path.normpath(output_dir)
+
     os.makedirs(output_dir,
                 exist_ok=True)
 
