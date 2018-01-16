@@ -8,7 +8,11 @@ services:
         - PYTHON3_VERSION=${PYTHON3_VERSION}
     image: __dockerhub_login__/__project__:0.0.0
     volumes:
-      - .:/opt/__project__/
+      - ./__project__/:/opt/__project__/__project__/
+      - ./tests/:/opt/__project__/tests/
+      - ./README.rst:/opt/__project__/README.rst
+      - ./setup.py:/opt/__project__/setup.py
+      - ./setup.cfg:/opt/__project__/seup.cfg
     entrypoint: python3
     command: setup.py test
     extra_hosts:
