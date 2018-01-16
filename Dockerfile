@@ -7,7 +7,7 @@ WORKDIR /opt/monty
 COPY template/ template/
 COPY scripts/ scripts/
 COPY tests/ tests/
-COPY README.rst .
+COPY README.md .
 COPY setup.py .
 COPY setup.cfg .
 
