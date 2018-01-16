@@ -10,6 +10,7 @@ services:
     volumes:
       - ./template:/opt/monty/template
       - ./tests:/opt/monty/tests
+      - ./README.md:/opt/monty/README.md
       - ./setup.py:/opt/monty/setup.py
       - ./setup.cfg:/opt/monty/setup.cfg
       - ./scripts:/opt/monty/scripts
