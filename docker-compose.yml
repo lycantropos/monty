@@ -9,11 +9,11 @@ services:
     image: lycantropos/monty:0.0.1-alpha
     volumes:
       - ./template:/opt/monty/template
+      - ./scripts:/opt/monty/scripts
       - ./tests:/opt/monty/tests
       - ./README.md:/opt/monty/README.md
       - ./setup.py:/opt/monty/setup.py
       - ./setup.cfg:/opt/monty/setup.cfg
-      - ./scripts:/opt/monty/scripts
     entrypoint: python3
     command: setup.py test
     extra_hosts:
