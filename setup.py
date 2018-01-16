@@ -19,7 +19,7 @@ tests_require = [
 ]
 
 setup(name='montemplate',
-      scripts=[os.path.join('scripts', 'monty.py')],
+      scripts=[os.path.join('scripts', 'monty')],
       version='version=0.0.1-alpha',
       description='Python project generator.',
       long_description=open('README.md').read(),
