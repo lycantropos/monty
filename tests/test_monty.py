@@ -1,5 +1,6 @@
 from functools import partial
 from typing import (Any,
+                    Optional,
                     Iterable)
 
 import click
@@ -11,12 +12,14 @@ from scripts.monty import (main,
 
 def test_monty(settings_path: str,
                template_dir: str,
-               output_dir: str) -> None:
+               output_dir: str,
+               github_access_token: Optional[str]) -> None:
     monty = partial(main.callback,
                     version=False,
                     settings_path=settings_path,
                     template_dir=template_dir,
-                    output_dir=output_dir)
+                    output_dir=output_dir,
+                    github_access_token=github_access_token)
 
     template_dir_files_count = capacity(files_paths(template_dir))
     files_count_before = capacity(files_paths(output_dir))

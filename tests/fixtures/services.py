@@ -1,3 +1,6 @@
+import os
+from typing import Optional
+
 import pytest
 
 from tests import strategies
@@ -12,6 +15,11 @@ def dockerhub_login() -> str:
 @pytest.fixture(scope='function')
 def github_login() -> str:
     return example(strategies.github_logins)
+
+
+@pytest.fixture(scope='session')
+def github_access_token() -> Optional[str]:
+    return os.getenv('GITHUB_ACCESS_TOKEN')
 
 
 @pytest.fixture(scope='function')
