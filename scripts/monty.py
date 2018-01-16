@@ -6,6 +6,7 @@ from functools import partial
 from itertools import filterfalse
 from pathlib import PurePath
 from typing import (Any,
+                    Optional,
                     Callable,
                     Iterable,
                     Iterator,
@@ -35,13 +36,15 @@ def load_user(login: str,
               *,
               base_url: str,
               version: str,
-              users_method_url: Callable[..., str]) -> requests.Response:
+              users_method_url: Callable[..., str],
+              **params: Any) -> requests.Response:
     users_url = users_method_url(base_url=base_url,
                                  version=version)
     user_url = urljoin(users_url, login)
 
     with requests.Session() as session:
-        return session.get(user_url)
+        return session.get(user_url,
+                           params=params)
 
 
 def load_dockerhub_user(login: str,
@@ -68,13 +71,18 @@ def load_dockerhub_user(login: str,
 
 def load_github_user(login: str,
                      *,
-                     base_url='https://api.github.com') -> Dict[str, Any]:
+                     base_url='https://api.github.com',
+                     access_token: str = None) -> Dict[str, Any]:
     users_method_url = partial(api_method_url,
                                'users')
+    params = {}
+    if access_token is not None:
+        params['access_token'] = access_token
     response = load_user(login=login,
                          base_url=base_url,
                          version='',
-                         users_method_url=users_method_url)
+                         users_method_url=users_method_url,
+                         **params)
     user = response.json()
     try:
         err_msg = user['message']
@@ -102,11 +110,16 @@ def load_github_user(login: str,
 @click.option('--overwrite',
               is_flag=True,
               help='Overwrites files if output directory exists.')
+@click.option('--github-access-token', '-g',
+              default=None,
+              help='Personal access token '
+                   'that can be used to access the GitHub API.')
 def main(version: bool,
          settings_path: str,
          template_dir: str,
          output_dir: str,
-         overwrite: bool) -> None:
+         overwrite: bool,
+         github_access_token: Optional[str]) -> None:
     if version:
         sys.stdout.write(__version__)
         return
@@ -123,7 +136,8 @@ def main(version: bool,
     dockerhub_login = settings['dockerhub_login']
     github_login = settings['github_login']
     dockerhub_user = load_dockerhub_user(dockerhub_login)
-    github_user = load_github_user(github_login)
+    github_user = load_github_user(github_login,
+                                   access_token=github_access_token)
     settings.setdefault('full_name',
                         github_user['name'] or dockerhub_user['full_name'])
     replacements = {'__{key}__'.format(key=key): value
