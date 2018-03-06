@@ -10,7 +10,7 @@ services:
     volumes:
       - ./__project__/:/opt/__project__/__project__/
       - ./tests/:/opt/__project__/tests/
-      - ./README.md:/opt/__project__/README.md
+      - ./README.rst:/opt/__project__/README.rst
       - ./setup.py:/opt/__project__/setup.py
       - ./setup.cfg:/opt/__project__/setup.cfg
     entrypoint: python3

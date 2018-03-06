@@ -6,7 +6,7 @@ WORKDIR /opt/__project__
 
 COPY __project__/ __project__/
 COPY tests/ tests/
-COPY README.md .
+COPY README.rst .
 COPY setup.py .
 COPY setup.cfg .
 
