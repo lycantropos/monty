@@ -6,11 +6,11 @@ from functools import partial
 from itertools import filterfalse
 from pathlib import PurePath
 from typing import (Any,
-                    Optional,
                     Callable,
+                    Dict,
                     Iterable,
                     Iterator,
-                    Dict,
+                    Optional,
                     Tuple)
 
 import click

@@ -1,13 +1,13 @@
 from functools import partial
 from typing import (Any,
-                    Optional,
-                    Iterable)
+                    Iterable,
+                    Optional)
 
 import click
 import pytest
 
-from scripts.monty import (main,
-                           files_paths)
+from scripts.monty import (files_paths,
+                           main)
 
 
 def test_monty(settings_path: str,

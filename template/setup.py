@@ -1,8 +1,7 @@
-from setuptools import (setup,
-                        find_packages)
-
 import __project__
 from __project__.config import PROJECT_NAME
+from setuptools import (find_packages,
+                        setup)
 
 project_base_url = 'https://github.com/__github_login__/__project__/'
 
