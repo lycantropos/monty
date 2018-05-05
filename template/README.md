@@ -40,7 +40,7 @@ Bumping version
 ---------------
 
 Install
-[bumpversion](https://github.com/peritus/bumpversion#installation).
+[bump2version](https://github.com/c4urself/bump2version#installation).
 
 Choose which version number category to bump following [semver
 specification](http://semver.org/).
@@ -48,7 +48,7 @@ specification](http://semver.org/).
 Test bumping version
 
 ```bash
-bumpversion --dry-run --verbose $VERSION
+bump2version --dry-run --verbose $VERSION
 ```
 
 where `$VERSION` is the target version number category name, possible
@@ -57,7 +57,7 @@ values are `patch`/`minor`/`major`.
 Bump version
 
 ```bash
-bumpversion --verbose $VERSION
+bump2version --verbose $VERSION
 ```
 
 **Note**: to avoid inconsistency between branches and pull requests,
