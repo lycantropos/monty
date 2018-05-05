@@ -85,3 +85,9 @@ Bash script (e.g. can be used in `Git` hooks)
 ```bash
 ./run-tests.sh
 ```
+
+PowerShell script (e.g. can be used in `Git` hooks)
+
+```powershell
+.\run-tests.ps1
+```
