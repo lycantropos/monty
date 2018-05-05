@@ -15,5 +15,3 @@ services:
       - ./setup.cfg:/opt/__project__/setup.cfg
     entrypoint: python3
     command: setup.py test
-    extra_hosts:
-      - "dockerhost:$DOCKERHOST"  # for debugging

@@ -80,12 +80,6 @@ Inside `Docker` container
 docker-compose up
 ```
 
-Inside `Docker` container with remote debugger
-
-```bash
-./set-dockerhost.sh docker-compose up
-```
-
 Bash script (e.g. can be used in `Git` hooks)
 
 ```bash
