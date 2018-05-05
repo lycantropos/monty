@@ -155,14 +155,16 @@ def main(version: bool,
                        'but no "--overwrite" flag was set.'
                        .format(path=new_file_path))
             raise click.BadOptionUsage(err_msg)
-        with open(file_path) as file:
+        with open(file_path,
+                  encoding='utf-8') as file:
             new_lines = list(replace_lines(file,
                                            replacements=replacements))
         directory_path = os.path.dirname(new_file_path)
         os.makedirs(directory_path,
                     exist_ok=True)
         with open(new_file_path,
-                  mode='w') as new_file:
+                  mode='w',
+                  encoding='utf-8') as new_file:
             new_file.writelines(new_lines)
 
 
