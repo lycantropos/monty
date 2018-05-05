@@ -36,4 +36,4 @@ def template_dir() -> str:
 @pytest.fixture(scope='function')
 def output_dir() -> str:
     with tempfile.TemporaryDirectory() as result:
-        yield result.name
+        yield result
