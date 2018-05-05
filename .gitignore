@@ -1,6 +1,7 @@
 # logs
 *.log
 
+### Python
 # Byte-compiled / optimized / DLL files
 .cache/
 **/__pycache__/
@@ -29,5 +30,8 @@ var/
 .coverage
 result.xml
 
-# IntelliJ IDEA
+# virtual environments
+venv/
+
+### IntelliJ IDEA
 .idea/
