@@ -8,7 +8,7 @@ STATUS=$?
 
 docker-compose down --remove-orphans
 
-if [ "$STATUS" -eq "0" ]; then
+if [ "${STATUS}" -eq "0" ]; then
 	echo "Tests passed";
 else
 	echo "Tests failed to pass"
