@@ -16,9 +16,16 @@ def settings() -> Dict[str, str]:
 
 @pytest.fixture(scope='function')
 def settings_path(settings: Dict[str, str]) -> str:
-    with tempfile.NamedTemporaryFile(mode='w') as file:
-        yaml.safe_dump(settings, file)
-        yield file.name
+    file = tempfile.NamedTemporaryFile(mode='w',
+                                       encoding='utf8',
+                                       delete=False)
+    yaml.safe_dump(settings, file)
+    file.close()
+    result = file.name
+    try:
+        yield result
+    finally:
+        os.unlink(result)
 
 
 @pytest.fixture(scope='function')
