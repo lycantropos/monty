@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Python project generator."""
 import os
 import posixpath
 import sys
