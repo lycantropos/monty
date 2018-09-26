@@ -156,17 +156,25 @@ def main(version: bool,
                        'but no "--overwrite" flag was set.'
                        .format(path=new_file_path))
             raise click.BadOptionUsage(err_msg)
-        with open(file_path,
-                  encoding='utf-8') as file:
-            new_lines = list(replace_lines(file,
-                                           replacements=replacements))
-        directory_path = os.path.dirname(new_file_path)
-        os.makedirs(directory_path,
-                    exist_ok=True)
-        with open(new_file_path,
-                  mode='w',
-                  encoding='utf-8') as new_file:
-            new_file.writelines(new_lines)
+        rewrite_file(file_path, new_file_path,
+                     replacements=replacements)
+
+
+def rewrite_file(src_file_path: str,
+                 dst_file_path: str,
+                 *,
+                 replacements: Dict[str, str]) -> None:
+    with open(src_file_path,
+              encoding='utf-8') as file:
+        new_lines = list(replace_lines(file,
+                                       replacements=replacements))
+    directory_path = os.path.dirname(dst_file_path)
+    os.makedirs(directory_path,
+                exist_ok=True)
+    with open(dst_file_path,
+              mode='w',
+              encoding='utf-8') as new_file:
+        new_file.writelines(new_lines)
 
 
 def is_binary_file(path: str) -> bool:
