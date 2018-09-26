@@ -5,18 +5,18 @@ from setuptools import setup
 project_base_url = 'https://github.com/lycantropos/monty/'
 
 setup_requires = [
-    'pytest-runner>=3.0',
+    'pytest-runner>=4.2'
 ]
 install_requires = [
-    'click>=6.7',  # command-line interface
-    'PyYAML>=3.12',  # loading settings
-    'requests>=2.8.14',  # synchronous HTTP
+    'click>=7.0',  # command-line interface
+    'PyYAML>=3.13',  # loading settings
+    'requests>=2.19.1',  # synchronous HTTP
 ]
 tests_require = [
-    'pydevd>=1.1.1',  # debugging
+    'pydevd>=1.4.0',  # debugging
     'pytest>=3.2.1',
-    'pytest-cov>=2.5.1',
-    'hypothesis>=3.38.5',
+    'pytest-cov>=2.6.0',
+    'hypothesis>=3.73.1',
 ]
 
 entry_points = {
