@@ -20,7 +20,7 @@ import click
 import requests
 import yaml
 
-__version__ = '0.0.1'
+__version__ = '0.0.2-alpha'
 
 TRANSLATION_TABLE = bytes(frozenset({7, 8, 9, 10, 12, 13, 27}
                                     | set(range(0x20, 0x100)) - {0x7f}))
