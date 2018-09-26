@@ -2,6 +2,7 @@ monty
 =====
 
 [![](https://travis-ci.org/lycantropos/monty.svg?branch=master)](https://travis-ci.org/lycantropos/monty "Travis CI")
+[![](https://ci.appveyor.com/api/projects/status/github/lycantropos/monty?branch=master&svg=true)](https://ci.appveyor.com/project/lycantropos/monty "AppVeyor")
 [![](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
 [![](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/montemplate.svg)](https://badge.fury.io/py/montemplate "PyPI")

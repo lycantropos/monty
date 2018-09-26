@@ -2,6 +2,7 @@ __project__
 ===========
 
 [![](https://travis-ci.org/__github_login__/__project__.svg?branch=master)](https://travis-ci.org/__github_login__/__project__ "Travis CI")
+[![](https://ci.appveyor.com/api/projects/status/github/__github_login__/__project__?branch=master&svg=true)](https://ci.appveyor.com/project/__github_login__/__project__ "AppVeyor")
 [![](https://codecov.io/gh/__github_login__/__project__/branch/master/graph/badge.svg)](https://codecov.io/gh/__github_login__/__project__ "Codecov")
 [![](https://img.shields.io/github/license/__github_login__/__project__.svg)](https://github.com/__github_login__/__project__/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/__project__.svg)](https://badge.fury.io/py/__project__ "PyPI")
