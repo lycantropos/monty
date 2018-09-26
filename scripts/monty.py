@@ -20,8 +20,8 @@ import yaml
 
 __version__ = '0.0.1'
 
-TRANSLATION_TABLE = frozenset({7, 8, 9, 10, 12, 13, 27}
-                              | set(range(0x20, 0x100)) - {0x7f})
+TRANSLATION_TABLE = bytes(frozenset({7, 8, 9, 10, 12, 13, 27}
+                                    | set(range(0x20, 0x100)) - {0x7f}))
 
 urljoin = posixpath.join
 
@@ -176,9 +176,8 @@ def is_binary_file(path: str) -> bool:
 
 def is_binary_string(bytes_string: bytes,
                      *,
-                     translation_table: Iterable[int] = TRANSLATION_TABLE
-                     ) -> bool:
-    return bool(bytes_string.translate(None, bytearray(translation_table)))
+                     translation_table: bytes = TRANSLATION_TABLE) -> bool:
+    return bool(bytes_string.translate(None, translation_table))
 
 
 def files_paths(path: str) -> Iterator[str]:
