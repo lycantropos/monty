@@ -6,13 +6,13 @@ from typing import (Any,
 import click
 import pytest
 
-from scripts import monty
+from monty import monty
 
 
-def test_command(settings_path: str,
-                 template_dir: str,
-                 output_dir: str,
-                 github_access_token: Optional[str]) -> None:
+def test_main(settings_path: str,
+              template_dir: str,
+              output_dir: str,
+              github_access_token: Optional[str]) -> None:
     command = partial(monty.main.callback,
                       version=False,
                       settings_path=settings_path,

@@ -5,7 +5,7 @@ FROM python:${PYTHON3_VERSION}
 WORKDIR /opt/monty
 
 COPY template/ template/
-COPY scripts/ scripts/
+COPY monty/ monty/
 COPY tests/ tests/
 COPY README.md .
 COPY setup.py .

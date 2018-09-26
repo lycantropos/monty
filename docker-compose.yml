@@ -9,7 +9,7 @@ services:
     image: lycantropos/monty:0.0.1
     volumes:
       - ./template:/opt/monty/template
-      - ./scripts:/opt/monty/scripts
+      - ./monty:/opt/monty/monty
       - ./tests:/opt/monty/tests
       - ./README.md:/opt/monty/README.md
       - ./setup.py:/opt/monty/setup.py
