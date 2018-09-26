@@ -3,8 +3,10 @@
 import os
 import posixpath
 import sys
-from functools import partial
-from itertools import filterfalse
+from functools import (partial,
+                       reduce)
+from itertools import (filterfalse,
+                       tee)
 from pathlib import Path
 from typing import (Any,
                     Callable,
@@ -200,43 +202,33 @@ def replace_files_paths(paths: Iterable[str],
                         dst: str,
                         replacements: Dict[str, str]
                         ) -> Iterator[Tuple[str, str]]:
-    for path in paths:
-        new_path = replace_file_path(path,
-                                     src=src,
-                                     dst=dst,
-                                     replacements=replacements)
-        yield path, new_path
+    def replace_file_path(file_path: str) -> str:
+        root, file_name = os.path.split(file_path)
+        new_file_name, = replace_path_parts(file_name,
+                                            replacements=replacements)
+        new_root_parts = Path(root.replace(src, dst)).parts
+        new_root_parts = replace_path_parts(*new_root_parts,
+                                            replacements=replacements)
+        new_root = str(Path(*new_root_parts))
+        return os.path.join(new_root, new_file_name)
 
-
-def replace_file_path(file_path: str,
-                      *,
-                      src: str,
-                      dst: str,
-                      replacements: Dict[str, str]) -> str:
-    root, file_name = os.path.split(file_path)
-    new_file_name, = replace_path_parts(file_name,
-                                        replacements=replacements)
-    new_root_parts = Path(root.replace(src, dst)).parts
-    new_root_parts = replace_path_parts(*new_root_parts,
-                                        replacements=replacements)
-    new_root = str(Path(*new_root_parts))
-    return os.path.join(new_root, new_file_name)
+    first_paths, second_paths = tee(paths)
+    yield from zip(first_paths, map(replace_file_path, second_paths))
 
 
 def replace_path_parts(*path_parts: str,
                        replacements: Dict[str, str]) -> Iterator[str]:
-    for path_part in path_parts:
-        yield replacements.get(path_part, path_part)
+    yield from map(replacements.get, path_parts, path_parts)
 
 
 def replace_lines(lines: Iterable[str],
                   *,
                   replacements: Dict[str, str]) -> Iterator[str]:
-    replacements_items = replacements.items()
-    for line in lines:
-        for key, value in replacements_items:
-            line = line.replace(key, value)
-        yield line
+    def replace_item(string: str, item: Tuple[str, str]) -> str:
+        return string.replace(*item)
+
+    replace_items = partial(reduce, replace_item, replacements.items())
+    yield from map(replace_items, lines)
 
 
 if __name__ == '__main__':
