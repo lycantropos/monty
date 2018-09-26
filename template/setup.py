@@ -24,5 +24,6 @@ setup(name='__project__',
       author_email='__email__',
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
+      python_requires='>=3.5',
       setup_requires=setup_requires,
       tests_require=tests_require)
