@@ -42,8 +42,12 @@ Development
 
 ### Bumping version
 
+#### Preparation
+
 Install
 [bump2version](https://github.com/c4urself/bump2version#installation).
+
+#### Pre-release
 
 Choose which version number category to bump following [semver
 specification](http://semver.org/).
@@ -51,19 +55,39 @@ specification](http://semver.org/).
 Test bumping version
 
 ```bash
-bump2version --dry-run --verbose $VERSION
+bump2version --dry-run --verbose $CATEGORY
 ```
 
-where `$VERSION` is the target version number category name, possible
+where `$CATEGORY` is the target version number category name, possible
 values are `patch`/`minor`/`major`.
 
 Bump version
 
 ```bash
-bump2version --verbose $VERSION
+bump2version --verbose $CATEGORY
 ```
 
-**Note**: to avoid inconsistency between branches and pull requests,
+This will set version to `major.minor.patch-alpha`. 
+
+#### Release
+
+Test bumping version
+
+```bash
+bump2version --dry-run --verbose release
+```
+
+Bump version
+
+```bash
+bump2version --verbose release
+```
+
+This will set version to `major.minor.patch`.
+
+#### Notes
+
+To avoid inconsistency between branches and pull requests,
 bumping version should be merged into `master` branch as separate pull
 request.
 
