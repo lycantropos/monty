@@ -14,7 +14,7 @@ install_requires = [
 ]
 tests_require = [
     'pydevd>=1.4.0',  # debugging
-    'pytest>=3.2.1',
+    'pytest>=3.8.1',
     'pytest-cov>=2.6.0',
     'hypothesis>=3.73.1',
 ]
