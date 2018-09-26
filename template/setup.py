@@ -1,5 +1,4 @@
 import __project__
-from __project__.config import PROJECT_NAME
 from setuptools import (find_packages,
                         setup)
 
@@ -15,7 +14,7 @@ tests_require = [
     'hypothesis>=3.38.5',
 ]
 
-setup(name=PROJECT_NAME,
+setup(name='__project__',
       packages=find_packages(exclude=('tests',)),
       version=__project__.__version__,
       description=__project__.__doc__,
