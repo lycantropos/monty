@@ -5,7 +5,7 @@ import posixpath
 import sys
 from functools import partial
 from itertools import filterfalse
-from pathlib import PurePath
+from pathlib import Path
 from typing import (Any,
                     Callable,
                     Dict,
@@ -209,10 +209,10 @@ def replace_file_path(file_path: str,
     root, file_name = os.path.split(file_path)
     new_file_name, = replace_path_parts(file_name,
                                         replacements=replacements)
-    new_root_parts = PurePath(root.replace(src, dst)).parts
+    new_root_parts = Path(root.replace(src, dst)).parts
     new_root_parts = replace_path_parts(*new_root_parts,
                                         replacements=replacements)
-    new_root = str(PurePath(*new_root_parts))
+    new_root = str(Path(*new_root_parts))
     return os.path.join(new_root, new_file_name)
 
 
