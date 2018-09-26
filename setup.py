@@ -1,4 +1,3 @@
-import os
 from setuptools import setup
 
 project_base_url = 'https://github.com/lycantropos/monty/'
@@ -18,8 +17,14 @@ tests_require = [
     'hypothesis>=3.38.5',
 ]
 
+entry_points = {
+    'console_scripts':
+        [
+            'monty = scripts.monty:main'
+        ],
+}
+
 setup(name='montemplate',
-      scripts=[os.path.join('scripts', 'monty.py')],
       version='0.0.1',
       description='Python project generator.',
       long_description=open('README.md').read(),
@@ -31,4 +36,5 @@ setup(name='montemplate',
       python_requires='>=3.5',
       setup_requires=setup_requires,
       install_requires=install_requires,
-      tests_require=tests_require)
+      tests_require=tests_require,
+      entry_points=entry_points)
