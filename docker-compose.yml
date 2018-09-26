@@ -6,7 +6,7 @@ services:
       context: .
       args:
         - PYTHON3_VERSION=${PYTHON3_VERSION}
-    image: lycantropos/monty:0.0.2-alpha
+    image: lycantropos/monty:0.0.2
     volumes:
       - ./template:/opt/monty/template
       - ./monty:/opt/monty/monty
