@@ -62,12 +62,12 @@ def load_dockerhub_user(login: str,
                          users_method_url=users_method_url)
     try:
         response.raise_for_status()
-    except requests.HTTPError as err:
-        err_msg = ('Invalid login: "{login}". '
-                   'Not found via API request to "{url}".'
-                   .format(login=login,
-                           url=response.url))
-        raise ValueError(err_msg) from err
+    except requests.HTTPError as error:
+        error_message = ('Invalid login: "{login}". '
+                         'Not found via API request to "{url}".'
+                         .format(login=login,
+                                 url=response.url))
+        raise ValueError(error_message) from error
     else:
         return response.json()
 
@@ -88,10 +88,11 @@ def load_github_user(login: str,
                          **params)
     user = response.json()
     try:
-        err_msg = user['message']
-        raise ValueError(err_msg)
+        error_message = user['message']
     except KeyError:
         return user
+    else:
+        raise ValueError(error_message)
 
 
 @click.command()
@@ -153,11 +154,11 @@ def main(version: bool,
                                       replacements=replacements)
     for file_path, new_file_path in paths_pairs:
         if not overwrite and os.path.exists(new_file_path):
-            err_msg = ('Trying to overwrite '
-                       'existing file "{path}", '
-                       'but no "--overwrite" flag was set.'
-                       .format(path=new_file_path))
-            raise click.BadOptionUsage('overwrite', err_msg)
+            error_message = ('Trying to overwrite '
+                             'existing file "{path}", '
+                             'but no "--overwrite" flag was set.'
+                             .format(path=new_file_path))
+            raise click.BadOptionUsage('overwrite', error_message)
         rewrite_file(file_path, new_file_path,
                      replacements=replacements)
 
