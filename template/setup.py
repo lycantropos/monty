@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import __project__
 from setuptools import (find_packages,
                         setup)
@@ -18,7 +20,7 @@ setup(name='__project__',
       packages=find_packages(exclude=('tests',)),
       version=__project__.__version__,
       description=__project__.__doc__,
-      long_description=open('README.md').read(),
+      long_description=Path('README.md').read_text(),
       long_description_content_type='text/markdown',
       author='__full_name__',
       author_email='__email__',

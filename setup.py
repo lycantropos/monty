@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from setuptools import setup
 
 project_base_url = 'https://github.com/lycantropos/monty/'
@@ -27,7 +29,7 @@ entry_points = {
 setup(name='montemplate',
       version='0.0.1',
       description='Python project generator.',
-      long_description=open('README.md').read(),
+      long_description=Path('README.md').read_text(),
       long_description_content_type='text/markdown',
       author='Azat Ibrakov',
       author_email='azatibrakov@gmail.com',
