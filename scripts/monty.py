@@ -157,7 +157,7 @@ def main(version: bool,
                        'existing file "{path}", '
                        'but no "--overwrite" flag was set.'
                        .format(path=new_file_path))
-            raise click.BadOptionUsage(err_msg)
+            raise click.BadOptionUsage('overwrite', err_msg)
         rewrite_file(file_path, new_file_path,
                      replacements=replacements)
 
