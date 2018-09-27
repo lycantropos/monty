@@ -6,12 +6,12 @@ import pytest
 import strictyaml
 
 from tests import strategies
-from tests.utils import example
+from tests.utils import find
 
 
 @pytest.fixture(scope='function')
 def settings() -> Dict[str, str]:
-    return example(strategies.settings)
+    return find(strategies.settings)
 
 
 @pytest.fixture(scope='function')
