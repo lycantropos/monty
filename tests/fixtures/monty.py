@@ -3,7 +3,7 @@ import tempfile
 from typing import Dict
 
 import pytest
-import yaml
+import strictyaml
 
 from tests import strategies
 from tests.utils import example
@@ -19,7 +19,7 @@ def settings_path(settings: Dict[str, str]) -> str:
     file = tempfile.NamedTemporaryFile(mode='w',
                                        encoding='utf8',
                                        delete=False)
-    yaml.safe_dump(settings, file)
+    file.write(strictyaml.as_document(settings).as_yaml())
     file.close()
     result = file.name
     try:

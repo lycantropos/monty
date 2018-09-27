@@ -18,7 +18,9 @@ from typing import (Any,
 
 import click
 import requests
-import yaml
+from strictyaml import (Map,
+                        Str,
+                        load)
 
 __version__ = '0.0.2'
 
@@ -96,6 +98,12 @@ def load_github_user(login: str,
         raise ValueError(error_message)
 
 
+settings_schema = Map({'dockerhub_login': Str(),
+                       'project': Str(),
+                       'email': Str(),
+                       'github_login': Str()})
+
+
 @click.command()
 @click.option('--version', '-v',
               is_flag=True,
@@ -131,13 +139,11 @@ def main(version: bool,
 
     template_dir = os.path.normpath(template_dir)
     output_dir = os.path.normpath(output_dir)
-
     os.makedirs(output_dir,
                 exist_ok=True)
-
-    with open(settings_path) as settings_file:
-        settings = yaml.safe_load(settings_file)
-
+    settings = (load(Path(settings_path).read_text(),
+                     schema=settings_schema)
+                .data)
     dockerhub_login = settings['dockerhub_login']
     github_login = settings['github_login']
     dockerhub_user = load_dockerhub_user(dockerhub_login)

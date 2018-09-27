@@ -9,7 +9,7 @@ setup_requires = [
 ]
 install_requires = [
     'click>=7.0',  # command-line interface
-    'PyYAML>=3.13',  # loading settings
+    'strictyaml>=0.13.0',  # loading settings
     'requests>=2.19.1',  # synchronous HTTP
 ]
 tests_require = [
