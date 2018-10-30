@@ -5,7 +5,7 @@ from setuptools import setup
 project_base_url = 'https://github.com/lycantropos/monty/'
 
 setup_requires = [
-    'pytest-runner>=4.2'
+    'pytest-runner>=4.2',
 ]
 install_requires = [
     'click>=7.0',  # command-line interface
@@ -13,7 +13,6 @@ install_requires = [
     'requests>=2.19.1',  # synchronous HTTP
 ]
 tests_require = [
-    'pydevd>=1.4.0',  # debugging
     'pytest>=3.8.1',
     'pytest-cov>=2.6.0',
     'hypothesis>=3.73.1',

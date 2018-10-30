@@ -7,10 +7,9 @@ from setuptools import (find_packages,
 project_base_url = 'https://github.com/__github_login__/__project__/'
 
 setup_requires = [
-    'pytest-runner>=4.2'
+    'pytest-runner>=4.2',
 ]
 tests_require = [
-    'pydevd>=1.4.0',  # debugging
     'pytest>=3.8.1',
     'pytest-cov>=2.6.0',
     'hypothesis>=3.73.1',
