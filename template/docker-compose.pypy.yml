@@ -1,17 +1,18 @@
 version: '3'
 
 services:
-  __project__:
+  __project__-pypy:
     build:
       context: .
       args:
-        - PYTHON3_VERSION=${PYTHON3_VERSION}
-    image: __dockerhub_login__/__project__:0.0.0
+      - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
+      - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
+    image: __dockerhub_login__/__project__-pypy:0.0.0
     volumes:
       - ./__project__/:/opt/__project__/__project__/
       - ./tests/:/opt/__project__/tests/
       - ./README.md:/opt/__project__/README.md
       - ./setup.py:/opt/__project__/setup.py
       - ./setup.cfg:/opt/__project__/setup.cfg
-    entrypoint: python3
+    entrypoint: pypy3
     command: setup.py test

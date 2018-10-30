@@ -1,12 +1,13 @@
 version: '3'
 
 services:
-  monty:
+  monty-pypy:
     build:
       context: .
       args:
-        - PYTHON3_VERSION=${PYTHON3_VERSION}
-    image: lycantropos/monty:0.0.2
+        - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
+        - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
+    image: lycantropos/monty-pypy:0.0.2
     volumes:
       - ./template:/opt/monty/template
       - ./monty:/opt/monty/monty
@@ -14,5 +15,5 @@ services:
       - ./README.md:/opt/monty/README.md
       - ./setup.py:/opt/monty/setup.py
       - ./setup.cfg:/opt/monty/setup.cfg
-    entrypoint: python3
+    entrypoint: pypy3
     command: setup.py test

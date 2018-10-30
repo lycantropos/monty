@@ -7,35 +7,54 @@ monty
 [![](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/montemplate.svg)](https://badge.fury.io/py/montemplate "PyPI")
 
-In what follows `python3` is an alias for `python3.5` or any later
-version (`python3.6` and so on).
+In what follows
+- `python` is an alias for `python3.5` or any later
+version (`python3.6` and so on),
+- `pypy` is an alias for `pypy3.5` or any later
+version (`pypy3.6` and so on).
 
 Installation
 ------------
 
-Install the latest `pip` & `setuptools` packages versions
-
-```bash
-python3 -m pip install --upgrade pip setuptools
-```
+Install the latest `pip` & `setuptools` packages versions:
+- with `CPython`
+  ```bash
+  python -m pip install --upgrade pip setuptools
+  ```
+- with `PyPy`
+  ```bash
+  pypy -m pip install --upgrade pip setuptools
+  ```
 
 ### User
 
-Download and install the latest stable version from `PyPI` repository
-
-```bash
-python3 -m pip install --upgrade montemplate
-```
+Download and install the latest stable version from `PyPI` repository:
+- with `CPython`
+  ```bash
+  python -m pip install --upgrade monty
+  ```
+- with `PyPy`
+  ```bash
+  pypy -m pip install --upgrade monty
+  ```
 
 ### Developer
 
-Download and install the latest version from `GitHub` repository
-
+Download the latest version from `GitHub` repository
 ```bash
 git clone https://github.com/lycantropos/monty.git
 cd monty
-python3 setup.py install
 ```
+
+Install:
+- with `CPython`
+  ```bash
+  python setup.py install
+  ```
+- with `PyPy`
+  ```bash
+  pypy setup.py install
+  ```
 
 Development
 -----------
@@ -53,7 +72,6 @@ Choose which version number category to bump following [semver
 specification](http://semver.org/).
 
 Test bumping version
-
 ```bash
 bump2version --dry-run --verbose $CATEGORY
 ```
@@ -62,7 +80,6 @@ where `$CATEGORY` is the target version number category name, possible
 values are `patch`/`minor`/`major`.
 
 Bump version
-
 ```bash
 bump2version --verbose $CATEGORY
 ```
@@ -72,13 +89,11 @@ This will set version to `major.minor.patch-alpha`.
 #### Release
 
 Test bumping version
-
 ```bash
 bump2version --dry-run --verbose release
 ```
 
 Bump version
-
 ```bash
 bump2version --verbose release
 ```
@@ -93,26 +108,51 @@ request.
 
 ### Running tests
 
-Plain
+Plain:
+- with `CPython`
+  ```bash
+  python setup.py test
+  ```
+- with `PyPy`
+  ```bash
+  pypy setup.py test
+  ```
 
-```bash
-python3 setup.py test
-```
+Inside `Docker` container:
+- with `CPython`
+  ```bash
+  docker-compose --file docker-compose.cpython.yml up
+  ```
+- with `PyPy`
+  ```bash
+  docker-compose --file docker-compose.pypy.yml up
+  ```
 
-Inside `Docker` container
+`Bash` script (e.g. can be used in `Git` hooks):
+- with `CPython`
+  ```bash
+  ./run-tests.sh
+  ```
+  or
+  ```bash
+  ./run-tests.sh cpython
+  ```
 
-```bash
-docker-compose up
-```
+- with `PyPy`
+  ```bash
+  ./run-tests.sh pypy
+  ```
 
-`Bash` script (e.g. can be used in `Git` hooks)
-
-```bash
-./run-tests.sh
-```
-
-`PowerShell` script (e.g. can be used in `Git` hooks)
-
-```powershell
-.\run-tests.ps1
-```
+`PowerShell` script (e.g. can be used in `Git` hooks):
+- with `CPython`
+  ```powershell
+  .\run-tests.ps1
+  ```
+  or
+  ```powershell
+  .\run-tests.ps1 cpython
+  ```
+- with `PyPy`
+  ```powershell
+  .\run-tests.ps1 pypy
+  ```

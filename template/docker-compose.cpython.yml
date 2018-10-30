@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  __project__-cpython:
+    build:
+      context: .
+      args:
+      - PYTHON_IMAGE=${CPYTHON_IMAGE_NAME}
+      - PYTHON_IMAGE_VERSION=${CPYTHON_IMAGE_VERSION}
+    image: __dockerhub_login__/__project__-cpython:0.0.0
+    volumes:
+      - ./__project__/:/opt/__project__/__project__/
+      - ./tests/:/opt/__project__/tests/
+      - ./README.md:/opt/__project__/README.md
+      - ./setup.py:/opt/__project__/setup.py
+      - ./setup.cfg:/opt/__project__/setup.cfg
+    entrypoint: python3
+    command: setup.py test
