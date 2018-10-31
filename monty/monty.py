@@ -22,7 +22,7 @@ from strictyaml import (Map,
                         Str,
                         load)
 
-__version__ = '0.0.3-alpha'
+__version__ = '0.0.3'
 
 TRANSLATION_TABLE = bytes({7, 8, 9, 10, 12, 13, 27}
                           | set(range(0x20, 0x100))
