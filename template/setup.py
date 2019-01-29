@@ -16,7 +16,7 @@ tests_require = [
 ]
 
 setup(name='__project__',
-      packages=find_packages(exclude=('tests',)),
+      packages=find_packages(exclude=('tests', 'tests.*')),
       version=__project__.__version__,
       description=__project__.__doc__,
       long_description=Path('README.md').read_text(encoding='utf-8'),
