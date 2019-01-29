@@ -1,8 +1,9 @@
 from pathlib import Path
 
-import __project__
 from setuptools import (find_packages,
                         setup)
+
+import __project__
 
 project_base_url = 'https://github.com/__github_login__/__project__/'
 
