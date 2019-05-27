@@ -1,4 +1,6 @@
 environment:
+  GITHUB_ACCESS_TOKEN:
+    secure: zmG+7cNvgb5lefPfg6O8472s064F6mPIaatzrgzf7Wjns9Vm34Pk5snWG6CiFVzY
   matrix:
     - PYTHON: "C:\\Python35"
     - PYTHON: "C:\\Python35-x64"
@@ -8,6 +10,7 @@ environment:
     - PYTHON: "C:\\Python37-x64"
 
 install:
+  - "echo %GITHUB_ACCESS_TOKEN%"
   - "%PYTHON%\\python.exe -m pip install --upgrade pip wheel setuptools"
   - "%PYTHON%\\python.exe -m pip install --upgrade codecov"
 
