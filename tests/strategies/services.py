@@ -1,3 +1,4 @@
+import os
 import string
 
 from hypothesis import strategies
@@ -5,6 +6,7 @@ from hypothesis import strategies
 from .common import ascii_alphanumeric
 
 dockerhub_logins = strategies.just('lycantropos')
+github_access_tokens = strategies.just(os.getenv('GITHUB_ACCESS_TOKEN'))
 github_logins = strategies.just('lycantropos')
 
 invalid_dockerhub_logins_alphabet = strategies.characters(

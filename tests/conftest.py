@@ -4,8 +4,8 @@ import sys
 from functools import partial
 from typing import Iterator
 
-from _pytest.config.argparsing import Parser
-from _pytest.python import Metafunc
+from hypothesis import (HealthCheck,
+                        settings)
 
 base_directory_path = os.path.dirname(__file__)
 sys.path.append(base_directory_path)
@@ -52,16 +52,8 @@ def path_to_module_name(path: str) -> str:
 fixtures_package_path = os.path.join(base_directory_path, 'fixtures')
 pytest_plugins = list(explore_pytest_plugins(fixtures_package_path))
 
-
-def pytest_addoption(parser: Parser) -> None:
-    parser.addoption('--repeat',
-                     action='store',
-                     help='Number of times to repeat each test.')
-
-
-def pytest_generate_tests(metafunc: Metafunc) -> None:
-    if metafunc.config.option.repeat is None:
-        return
-    count = int(metafunc.config.option.repeat)
-    metafunc.fixturenames.append('_')
-    metafunc.parametrize('_', range(count))
+settings.register_profile('default',
+                          max_examples=5,
+                          deadline=None,
+                          suppress_health_check=[HealthCheck.filter_too_much,
+                                                 HealthCheck.too_slow])
