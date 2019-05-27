@@ -5,8 +5,7 @@ from contextlib import (ExitStack,
 from functools import partial
 from typing import (Any,
                     Dict,
-                    Iterable,
-                    Optional)
+                    Iterable)
 
 import click
 import pytest
@@ -15,6 +14,7 @@ from hypothesis import given
 
 from monty import monty
 from tests import strategies
+from tests.utils import Secured
 
 
 @given(strategies.settings,
@@ -24,7 +24,7 @@ from tests import strategies
 def test_main(settings: Dict[str, str],
               template_directory_path: str,
               temporary_directory: tempfile.TemporaryDirectory,
-              github_access_token: Optional[str]) -> None:
+              github_access_token: Secured) -> None:
     with ExitStack() as stack:
         output_dir = stack.enter_context(temporary_directory)
         settings_path = stack.enter_context(write_settings(settings))
@@ -34,7 +34,7 @@ def test_main(settings: Dict[str, str],
                           settings_path=settings_path,
                           template_dir=template_directory_path,
                           output_dir=output_dir,
-                          github_access_token=github_access_token)
+                          github_access_token=github_access_token.value)
 
         template_directory_files_count = capacity(monty.files_paths(
                 template_directory_path))
