@@ -1,6 +1,4 @@
 environment:
-  GITHUB_ACCESS_TOKEN:
-    secure: OkcGTcfgYK5kw/uwZ8DtSg7nj0fo0ashxV30vsrQSjN/8OaDdcQ6r+/Nnx9Z9s2W
   matrix:
     - PYTHON: "C:\\Python35"
     - PYTHON: "C:\\Python35-x64"
