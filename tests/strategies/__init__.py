@@ -1,6 +1,6 @@
 from .monty import (settings,
-                    template_dirs,
-                    temporary_dirs)
+                    template_directories_paths,
+                    temporary_directories)
 from .services import (dockerhub_logins,
                        github_access_tokens,
                        github_logins,
