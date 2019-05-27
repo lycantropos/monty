@@ -1,6 +1,9 @@
+import os
+
 from hypothesis import (HealthCheck,
                         settings)
 
+print('environment keys', list(os.environ.keys()))
 settings.register_profile('default',
                           max_examples=5,
                           deadline=None,
