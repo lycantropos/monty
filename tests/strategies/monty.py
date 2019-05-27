@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 from hypothesis import strategies
 
 from .common import ascii_alphanumeric
@@ -26,3 +29,5 @@ settings = strategies.fixed_dictionaries({'email': strategies.emails(),
                                           'dockerhub_login': dockerhub_logins,
                                           'github_login': github_logins,
                                           'project': projects_names})
+template_directories_paths = strategies.just(os.path.abspath('template'))
+temporary_directories = strategies.builds(tempfile.TemporaryDirectory)

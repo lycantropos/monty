@@ -1,8 +1,9 @@
 from pathlib import Path
 
-import __project__
 from setuptools import (find_packages,
                         setup)
+
+import __project__
 
 project_base_url = 'https://github.com/__github_login__/__project__/'
 
@@ -16,7 +17,7 @@ tests_require = [
 ]
 
 setup(name='__project__',
-      packages=find_packages(exclude=('tests',)),
+      packages=find_packages(exclude=('tests', 'tests.*')),
       version=__project__.__version__,
       description=__project__.__doc__,
       long_description=Path('README.md').read_text(encoding='utf-8'),

@@ -1,9 +1,9 @@
 from typing import Any
 
-from hypothesis import core
-from hypothesis.searchstrategy import SearchStrategy
 
+class Secured:
+    def __init__(self, value: Any) -> None:
+        self.value = value
 
-def find(strategy: SearchStrategy) -> Any:
-    return core.find(strategy,
-                     lambda _: True)
+    def __repr__(self) -> str:
+        return '...'

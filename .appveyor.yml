@@ -9,8 +9,12 @@ environment:
 
 install:
   - "%PYTHON%\\python.exe -m pip install --upgrade pip wheel setuptools"
+  - "%PYTHON%\\python.exe -m pip install --upgrade codecov"
 
 build: false
 
 test_script:
   - "%PYTHON%\\python.exe setup.py test"
+
+on_success:
+  - "%PYTHON%\\python.exe -m codecov -f coverage.xml -X gcov"
