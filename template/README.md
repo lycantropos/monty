@@ -2,7 +2,7 @@ __project__
 ===========
 
 [![](https://travis-ci.org/__github_login__/__project__.svg?branch=master)](https://travis-ci.org/__github_login__/__project__ "Travis CI")
-[![](https://ci.appveyor.com/api/projects/status/github/__github_login__/__project__?branch=master&svg=true)](https://ci.appveyor.com/project/__github_login__/__project__ "AppVeyor")
+[![](https://dev.azure.com/__azure_login__/__project__/_apis/build/status/__github_login__.__project__?branchName=master)](https://dev.azure.com/__azure_login__/__project__/_build/latest?definitionId=2&branchName=master "Azure Pipelines")
 [![](https://codecov.io/gh/__github_login__/__project__/branch/master/graph/badge.svg)](https://codecov.io/gh/__github_login__/__project__ "Codecov")
 [![](https://img.shields.io/github/license/__github_login__/__project__.svg)](https://github.com/__github_login__/__project__/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/__project__.svg)](https://badge.fury.io/py/__project__ "PyPI")

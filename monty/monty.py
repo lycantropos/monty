@@ -98,10 +98,13 @@ def load_github_user(login: str,
         raise ValueError(error_message)
 
 
-settings_schema = Map({'dockerhub_login': Str(),
-                       'project': Str(),
-                       'email': Str(),
-                       'github_login': Str()})
+settings_schema = Map({
+    'azure_login': Str(),
+    'dockerhub_login': Str(),
+    'email': Str(),
+    'github_login': Str(),
+    'project': Str(),
+})
 
 
 @click.command()
