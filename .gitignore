@@ -28,7 +28,7 @@ var/
 # tests
 .hypothesis/
 .coverage
-result.xml
+coverage.xml
 
 # virtual environments
 venv/

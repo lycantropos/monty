@@ -22,7 +22,7 @@ from strictyaml import (Map,
                         Str,
                         load)
 
-__version__ = '0.0.4'
+__version__ = '0.1.0'
 
 TRANSLATION_TABLE = bytes({7, 8, 9, 10, 12, 13, 27}
                           | set(range(0x20, 0x100))
@@ -98,10 +98,13 @@ def load_github_user(login: str,
         raise ValueError(error_message)
 
 
-settings_schema = Map({'dockerhub_login': Str(),
-                       'project': Str(),
-                       'email': Str(),
-                       'github_login': Str()})
+settings_schema = Map({
+    'azure_login': Str(),
+    'dockerhub_login': Str(),
+    'email': Str(),
+    'github_login': Str(),
+    'project': Str(),
+})
 
 
 @click.command()
