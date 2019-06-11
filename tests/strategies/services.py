@@ -6,6 +6,7 @@ from hypothesis import strategies
 from tests.utils import Secured
 from .common import ascii_alphanumeric
 
+azure_logins = strategies.just('azatibrakov')
 dockerhub_logins = strategies.just('lycantropos')
 github_access_tokens = strategies.just(
         Secured(os.getenv('GITHUB_ACCESS_TOKEN')))
