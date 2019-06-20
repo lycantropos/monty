@@ -13,7 +13,8 @@ services:
       - ./monty:/opt/monty/monty
       - ./tests:/opt/monty/tests
       - ./README.md:/opt/monty/README.md
+      - ./requirements.txt:/opt/monty/requirements.txt
+      - ./requirements-tests.txt:/opt/monty/requirements-tests.txt
       - ./setup.py:/opt/monty/setup.py
       - ./setup.cfg:/opt/monty/setup.cfg
-    entrypoint: python3
-    command: setup.py test
+    entrypoint: pytest

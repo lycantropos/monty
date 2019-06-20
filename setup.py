@@ -7,16 +7,8 @@ project_base_url = 'https://github.com/lycantropos/monty/'
 setup_requires = [
     'pytest-runner>=4.2',
 ]
-install_requires = [
-    'click>=7.0',  # command-line interface
-    'strictyaml>=0.13.0',  # loading settings
-    'requests>=2.19.1',  # synchronous HTTP
-]
-tests_require = [
-    'pytest>=3.8.1',
-    'pytest-cov>=2.6.0',
-    'hypothesis>=3.73.1',
-]
+install_requires = Path('requirements.txt').read_text()
+tests_require = Path('requirements-tests.txt').read_text()
 
 entry_points = {
     'console_scripts':
