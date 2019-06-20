@@ -16,7 +16,7 @@ tests_require = [
     'hypothesis>=3.73.1',
 ]
 
-setup(name='__project__',
+setup(name=__project__.__name__,
       packages=find_packages(exclude=('tests', 'tests.*')),
       version=__project__.__version__,
       description=__project__.__doc__,
