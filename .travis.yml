@@ -14,9 +14,11 @@ matrix:
 
 install:
   - python -m pip install codecov
+  - python -m pip install -r requirements.txt
+  - python -m pip install -r requirements-tests.txt
 
 script:
-  - python setup.py test
+  - pytest
 
 after_success:
   - python -m codecov -f coverage.xml -X gcov

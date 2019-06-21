@@ -7,13 +7,14 @@ services:
       args:
         - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
         - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
-    image: lycantropos/monty-pypy:0.1.0
+    image: lycantropos/monty-pypy:0.1.1
     volumes:
       - ./template:/opt/monty/template
       - ./monty:/opt/monty/monty
       - ./tests:/opt/monty/tests
       - ./README.md:/opt/monty/README.md
+      - ./requirements.txt:/opt/monty/requirements.txt
+      - ./requirements-tests.txt:/opt/monty/requirements-tests.txt
       - ./setup.py:/opt/monty/setup.py
       - ./setup.cfg:/opt/monty/setup.cfg
-    entrypoint: pypy3
-    command: setup.py test
+    entrypoint: pytest

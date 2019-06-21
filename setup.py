@@ -7,16 +7,8 @@ project_base_url = 'https://github.com/lycantropos/monty/'
 setup_requires = [
     'pytest-runner>=4.2',
 ]
-install_requires = [
-    'click>=7.0',  # command-line interface
-    'strictyaml>=0.13.0',  # loading settings
-    'requests>=2.19.1',  # synchronous HTTP
-]
-tests_require = [
-    'pytest>=3.8.1',
-    'pytest-cov>=2.6.0',
-    'hypothesis>=3.73.1',
-]
+install_requires = Path('requirements.txt').read_text()
+tests_require = Path('requirements-tests.txt').read_text()
 
 entry_points = {
     'console_scripts':
@@ -26,7 +18,7 @@ entry_points = {
 }
 
 setup(name='montemplate',
-      version='0.1.0',
+      version='0.1.1',
       description='Python project generator.',
       long_description=Path('README.md').read_text(encoding='utf-8'),
       long_description_content_type='text/markdown',
