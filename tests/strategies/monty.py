@@ -1,5 +1,6 @@
 import os
 import tempfile
+from functools import partial
 
 from hypothesis import strategies
 
@@ -26,12 +27,17 @@ projects_names = (strategies.text(alphabet=projects_names_alphabet,
                                   min_size=2,
                                   max_size=100)
                   .filter(project_name_valid))
+versions_parts = strategies.integers(0, 100)
+versions = (strategies.tuples(versions_parts, versions_parts, versions_parts)
+            .map(partial(map, str))
+            .map('.'.join))
 settings = strategies.fixed_dictionaries({
     'azure_login': azure_logins,
     'dockerhub_login': dockerhub_logins,
     'email': strategies.emails(),
     'github_login': github_logins,
     'project': projects_names,
+    'version': versions,
 })
 template_directories_paths = strategies.just(os.path.abspath('template'))
 temporary_directories = strategies.builds(tempfile.TemporaryDirectory)
