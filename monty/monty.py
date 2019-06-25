@@ -3,6 +3,7 @@
 import os
 import posixpath
 import re
+import shutil
 import sys
 from functools import (partial,
                        reduce)
@@ -196,6 +197,7 @@ def rewrite_file(src_file_path: str,
               mode='w',
               encoding='utf-8') as new_file:
         new_file.writelines(new_lines)
+    shutil.copymode(src_file_path, dst_file_path)
 
 
 def is_binary_file(path: str) -> bool:
