@@ -13,10 +13,10 @@ setup_requires = [
 install_requires = Path('requirements.txt').read_text()
 tests_require = Path('requirements-tests.txt').read_text()
 
-setup(name=_project_._name_,
+setup(name=_project_.__name__,
       packages=find_packages(exclude=('tests', 'tests.*')),
-      version=_project_._version_,
-      description=_project_._doc_,
+      version=_project_.__version__,
+      description=_project_.__doc__,
       long_description=Path('README.md').read_text(encoding='utf-8'),
       long_description_content_type='text/markdown',
       author='_full_name_',
