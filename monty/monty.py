@@ -104,6 +104,7 @@ settings_schema = Map({
     'email': Str(),
     'github_login': Str(),
     'project': Str(),
+    'version': Str(),
 })
 
 

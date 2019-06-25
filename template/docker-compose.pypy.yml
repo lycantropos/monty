@@ -7,7 +7,7 @@ services:
       args:
       - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
       - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
-    image: __dockerhub_login__/__project__-pypy:0.0.0
+    image: __dockerhub_login__/__project__-pypy:__version__
     volumes:
       - ./__project__/:/opt/__project__/__project__/
       - ./tests/:/opt/__project__/tests/
