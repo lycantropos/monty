@@ -16,5 +16,4 @@ services:
       - ./requirements-tests.txt:/opt/__project__/requirements-tests.txt
       - ./setup.py:/opt/__project__/setup.py
       - ./setup.cfg:/opt/__project__/setup.cfg
-    entrypoint: pypy3
-    command: setup.py test
+    entrypoint: pytest

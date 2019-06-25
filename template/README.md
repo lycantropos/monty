@@ -46,6 +46,16 @@ git clone https://github.com/__github_login__/__project__.git
 cd __project__
 ```
 
+Install dependencies:
+- with `CPython`
+  ```bash
+  python -m pip install -r requirements.txt
+  ```
+- with `PyPy`
+  ```bash
+  pypy -m pip install -r requirements.txt
+  ```
+
 Install:
 - with `CPython`
   ```bash
@@ -100,23 +110,22 @@ bump2version --verbose release
 
 This will set version to `major.minor.patch`.
 
-#### Notes
-
-To avoid inconsistency between branches and pull requests,
-bumping version should be merged into `master` branch 
-as separate pull request.
-
 ### Running tests
 
-Plain:
+Install dependencies:
 - with `CPython`
   ```bash
-  python setup.py test
+  python -m pip install -r requirements-tests.txt
   ```
 - with `PyPy`
   ```bash
-  pypy setup.py test
+  pypy -m pip install -r requirements-tests.txt
   ```
+
+Plain
+```bash
+pytest
+```
 
 Inside `Docker` container:
 - with `CPython`
