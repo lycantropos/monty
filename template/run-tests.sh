@@ -5,7 +5,7 @@ set -e
 IMPLEMENTATION=${1:-cpython}
 COMPOSE_FILE_NAME=docker-compose.${IMPLEMENTATION}.yml
 
-docker-compose --file ${COMPOSE_FILE_NAME} up --build --exit-code-from __project__-${IMPLEMENTATION}
+docker-compose --file ${COMPOSE_FILE_NAME} up --build --exit-code-from _project_-${IMPLEMENTATION}
 
 STATUS=$?
 

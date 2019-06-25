@@ -7,13 +7,13 @@ services:
       args:
       - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
       - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
-    image: __dockerhub_login__/__project__-pypy:__version__
+    image: __dockerhub_login__/_project_-pypy:__version__
     volumes:
-      - ./__project__/:/opt/__project__/__project__/
-      - ./tests/:/opt/__project__/tests/
-      - ./README.md:/opt/__project__/README.md
-      - ./requirements.txt:/opt/__project__/requirements.txt
-      - ./requirements-tests.txt:/opt/__project__/requirements-tests.txt
-      - ./setup.py:/opt/__project__/setup.py
-      - ./setup.cfg:/opt/__project__/setup.cfg
+      - ./_project_/:/opt/_project_/_project_/
+      - ./tests/:/opt/_project_/tests/
+      - ./README.md:/opt/_project_/README.md
+      - ./requirements.txt:/opt/_project_/requirements.txt
+      - ./requirements-tests.txt:/opt/_project_/requirements-tests.txt
+      - ./setup.py:/opt/_project_/setup.py
+      - ./setup.cfg:/opt/_project_/setup.cfg
     entrypoint: pytest

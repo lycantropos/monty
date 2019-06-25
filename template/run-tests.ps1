@@ -2,7 +2,7 @@ param ([String]$implementation = "cpython")
 
 $compose_file = "docker-compose.${implementation}.yml"
 
-docker-compose --file $compose_file up --build --exit-code-from __project__-${implementation}
+docker-compose --file $compose_file up --build --exit-code-from _project_-${implementation}
 
 $STATUS = $LastExitCode
 
