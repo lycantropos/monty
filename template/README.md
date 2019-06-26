@@ -1,11 +1,11 @@
-__project__
+_project_
 ===========
 
-[![](https://travis-ci.com/__github_login__/__project__.svg?branch=master)](https://travis-ci.com/__github_login__/__project__ "Travis CI")
-[![](https://dev.azure.com/__azure_login__/__project__/_apis/build/status/__github_login__.__project__?branchName=master)](https://dev.azure.com/__azure_login__/__project__/_build/latest?definitionId=2&branchName=master "Azure Pipelines")
-[![](https://codecov.io/gh/__github_login__/__project__/branch/master/graph/badge.svg)](https://codecov.io/gh/__github_login__/__project__ "Codecov")
-[![](https://img.shields.io/github/license/__github_login__/__project__.svg)](https://github.com/__github_login__/__project__/blob/master/LICENSE "License")
-[![](https://badge.fury.io/py/__project__.svg)](https://badge.fury.io/py/__project__ "PyPI")
+[![](https://travis-ci.com/_github_login_/_project_.svg?branch=master)](https://travis-ci.com/_github_login_/_project_ "Travis CI")
+[![](https://dev.azure.com/_azure_login_/_project_/_apis/build/status/_github_login_._project_?branchName=master)](https://dev.azure.com/_azure_login_/_project_/_build/latest?branchName=master "Azure Pipelines")
+[![](https://codecov.io/gh/_github_login_/_project_/branch/master/graph/badge.svg)](https://codecov.io/gh/_github_login_/_project_ "Codecov")
+[![](https://img.shields.io/github/license/_github_login_/_project_.svg)](https://github.com/_github_login_/_project_/blob/master/LICENSE "License")
+[![](https://badge.fury.io/py/_project_.svg)](https://badge.fury.io/py/_project_ "PyPI")
 
 In what follows
 - `python` is an alias for `python3.5` or any later
@@ -31,19 +31,19 @@ Install the latest `pip` & `setuptools` packages versions:
 Download and install the latest stable version from `PyPI` repository:
 - with `CPython`
   ```bash
-  python -m pip install --upgrade __project__
+  python -m pip install --upgrade _project_
   ```
 - with `PyPy`
   ```bash
-  pypy -m pip install --upgrade __project__
+  pypy -m pip install --upgrade _project_
   ```
 
 ### Developer
 
 Download the latest version from `GitHub` repository
 ```bash
-git clone https://github.com/__github_login__/__project__.git
-cd __project__
+git clone https://github.com/_github_login_/_project_.git
+cd _project_
 ```
 
 Install dependencies:

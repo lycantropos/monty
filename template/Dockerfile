@@ -3,9 +3,9 @@ ARG PYTHON_IMAGE_VERSION
 
 FROM ${PYTHON_IMAGE}:${PYTHON_IMAGE_VERSION}
 
-WORKDIR /opt/__project__
+WORKDIR /opt/_project_
 
-COPY __project__/ __project__/
+COPY _project_ _project_/
 COPY tests/ tests/
 COPY README.md .
 COPY requirements.txt .

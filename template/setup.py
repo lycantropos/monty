@@ -3,9 +3,9 @@ from pathlib import Path
 from setuptools import (find_packages,
                         setup)
 
-import __project__
+import _project_
 
-project_base_url = 'https://github.com/__github_login__/__project__/'
+project_base_url = 'https://github.com/_github_login_/_project_/'
 
 setup_requires = [
     'pytest-runner>=4.2',
@@ -13,14 +13,14 @@ setup_requires = [
 install_requires = Path('requirements.txt').read_text()
 tests_require = Path('requirements-tests.txt').read_text()
 
-setup(name=__project__.__name__,
+setup(name=_project_.__name__,
       packages=find_packages(exclude=('tests', 'tests.*')),
-      version=__project__.__version__,
-      description=__project__.__doc__,
+      version=_project_.__version__,
+      description=_project_.__doc__,
       long_description=Path('README.md').read_text(encoding='utf-8'),
       long_description_content_type='text/markdown',
-      author='__full_name__',
-      author_email='__email__',
+      author='_full_name_',
+      author_email='_email_',
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
       python_requires='>=3.5',

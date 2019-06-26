@@ -2,6 +2,8 @@
 """Python project generator."""
 import os
 import posixpath
+import re
+import shutil
 import sys
 from functools import (partial,
                        reduce)
@@ -13,8 +15,10 @@ from typing import (Any,
                     Dict,
                     Iterable,
                     Iterator,
+                    List,
                     Optional,
-                    Tuple)
+                    Tuple,
+                    cast)
 
 import click
 import requests
@@ -22,7 +26,7 @@ from strictyaml import (Map,
                         Str,
                         load)
 
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 
 TRANSLATION_TABLE = bytes({7, 8, 9, 10, 12, 13, 27}
                           | set(range(0x20, 0x100))
@@ -104,6 +108,7 @@ settings_schema = Map({
     'email': Str(),
     'github_login': Str(),
     'project': Str(),
+    'version': Str(),
 })
 
 
@@ -154,7 +159,7 @@ def main(version: bool,
                                    access_token=github_access_token)
     settings.setdefault('full_name',
                         github_user['name'] or dockerhub_user['full_name'])
-    replacements = {'__{key}__'.format(key=key): value
+    replacements = {'_{}_'.format(key): value
                     for key, value in settings.items()}
     non_binary_files_paths = filterfalse(is_binary_file,
                                          files_paths(template_dir))
@@ -169,18 +174,22 @@ def main(version: bool,
                              'but no "--overwrite" flag was set.'
                              .format(path=new_file_path))
             raise click.BadOptionUsage('overwrite', error_message)
+        replacers = [cast(Callable[[str], str],
+                          partial(re.compile(r'\b{}\b'.format(origin)).sub,
+                                  replacement))
+                     for origin, replacement in replacements.items()]
         rewrite_file(file_path, new_file_path,
-                     replacements=replacements)
+                     replacers=replacers)
 
 
 def rewrite_file(src_file_path: str,
                  dst_file_path: str,
                  *,
-                 replacements: Dict[str, str]) -> None:
+                 replacers: List[Callable[[str], str]]) -> None:
     with open(src_file_path,
               encoding='utf-8') as file:
         new_lines = list(replace_lines(file,
-                                       replacements=replacements))
+                                       replacers=replacers))
     directory_path = os.path.dirname(dst_file_path)
     os.makedirs(directory_path,
                 exist_ok=True)
@@ -188,6 +197,7 @@ def rewrite_file(src_file_path: str,
               mode='w',
               encoding='utf-8') as new_file:
         new_file.writelines(new_lines)
+    shutil.copymode(src_file_path, dst_file_path)
 
 
 def is_binary_file(path: str) -> bool:
@@ -234,11 +244,11 @@ def replace_path_parts(*path_parts: str,
 
 def replace_lines(lines: Iterable[str],
                   *,
-                  replacements: Dict[str, str]) -> Iterator[str]:
-    def replace_item(string: str, item: Tuple[str, str]) -> str:
-        return string.replace(*item)
+                  replacers: List[Callable[[str], str]]) -> Iterator[str]:
+    def replace(string: str, replacer: Callable[[str], str]) -> str:
+        return replacer(string)
 
-    replace_items = partial(reduce, replace_item, replacements.items())
+    replace_items = partial(reduce, replace, replacers)
     yield from map(replace_items, lines)
 
 
