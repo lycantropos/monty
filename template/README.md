@@ -1,5 +1,5 @@
 _project_
-===========
+=========
 
 [![](https://travis-ci.com/_github_login_/_project_.svg?branch=master)](https://travis-ci.com/_github_login_/_project_ "Travis CI")
 [![](https://dev.azure.com/_azure_login_/_project_/_apis/build/status/_github_login_._project_?branchName=master)](https://dev.azure.com/_azure_login_/_project_/_build/latest?branchName=master "Azure Pipelines")
