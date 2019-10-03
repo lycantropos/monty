@@ -41,6 +41,18 @@ def api_method_url(method: str,
     return urljoin(base_url, version, method)
 
 
+def load_licenses_classifiers(*,
+                              url: str = 'https://pypi.org/pypi?%3A'
+                                         'action=list_classifiers',
+                              license_classifier_prefix: str = 'License :: '
+                              ) -> List[str]:
+    with requests.get(url,
+                      stream=True) as response:
+        return [line
+                for line in response.iter_lines(decode_unicode=True)
+                if line.startswith(license_classifier_prefix)]
+
+
 def load_user(login: str,
               *,
               base_url: str,
@@ -106,6 +118,7 @@ settings_schema = Map({
     'dockerhub_login': Str(),
     'email': Str(),
     'github_login': Str(),
+    'license': Str(),
     'project': Str(),
     'version': Str(),
 })
@@ -151,6 +164,26 @@ def main(version: bool,
     settings = (load(Path(settings_path).read_text(),
                      schema=settings_schema)
                 .data)
+    license_name = settings['license']
+    licenses_classifiers = load_licenses_classifiers()
+    license_classifiers = [classifier
+                           for classifier in licenses_classifiers
+                           if license_name in classifier]
+    try:
+        license_classifier, = license_classifiers
+    except ValueError:
+        if not license_classifiers:
+            error_message = ('There is no classifier found '
+                             'for license "{license_name}".'
+                             .format(license_name=license_name))
+        else:
+            error_message = ('Found {count} conflicting classifiers '
+                             'for license "{license_name}".'
+                             .format(count=len(license_classifiers),
+                                     license_name=license_name))
+        raise click.BadArgumentUsage(error_message)
+    else:
+        settings['license_classifier'] = license_classifier
     dockerhub_login = settings['dockerhub_login']
     github_login = settings['github_login']
     dockerhub_user = load_dockerhub_user(dockerhub_login)
