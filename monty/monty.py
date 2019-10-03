@@ -17,8 +17,7 @@ from typing import (Any,
                     Iterator,
                     List,
                     Optional,
-                    Tuple,
-                    cast)
+                    Tuple)
 
 import click
 import requests
@@ -174,9 +173,8 @@ def main(version: bool,
                              'but no "--overwrite" flag was set.'
                              .format(path=new_file_path))
             raise click.BadOptionUsage('overwrite', error_message)
-        replacers = [cast(Callable[[str], str],
-                          partial(re.compile(r'\b{}\b'.format(origin)).sub,
-                                  replacement))
+        replacers = [partial(re.compile(r'\b{}\b'.format(origin)).sub,
+                             replacement)
                      for origin, replacement in replacements.items()]
         rewrite_file(file_path, new_file_path,
                      replacers=replacers)
