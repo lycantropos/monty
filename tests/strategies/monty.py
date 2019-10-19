@@ -4,11 +4,13 @@ from functools import partial
 
 from hypothesis import strategies
 
+from monty import monty
 from .common import ascii_alphanumeric
 from .services import (azure_logins,
                        dockerhub_logins,
                        github_logins)
 
+licenses = strategies.sampled_from(list(monty.load_licenses_classifiers()))
 projects_names_delimiters = '.-_'
 projects_names_alphabet = strategies.sampled_from(ascii_alphanumeric
                                                   + projects_names_delimiters)
@@ -36,6 +38,7 @@ settings = strategies.fixed_dictionaries({
     'dockerhub_login': dockerhub_logins,
     'email': strategies.emails(),
     'github_login': github_logins,
+    'license': licenses,
     'project': projects_names,
     'version': versions,
 })

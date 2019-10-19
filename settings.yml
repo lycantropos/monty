@@ -1,6 +1,7 @@
 azure_login: lycantropos
 dockerhub_login: lycantropos
 email: azatibrakov@gmail.com
+license: MIT License
 github_login: lycantropos
 project: monty
 version: 0.0.0
