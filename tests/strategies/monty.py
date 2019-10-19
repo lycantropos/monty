@@ -10,7 +10,13 @@ from .services import (azure_logins,
                        dockerhub_logins,
                        github_logins)
 
-licenses = strategies.sampled_from(list(monty.load_licenses_classifiers()))
+licenses_classifiers = monty.load_licenses_classifiers()
+licenses = strategies.sampled_from(
+        [classifier.rsplit(' :: ', 1)[-1]
+         for classifier in licenses_classifiers
+         if len([sub_classifier
+                 for sub_classifier in licenses_classifiers
+                 if sub_classifier.startswith(classifier)]) == 1])
 projects_names_delimiters = '.-_'
 projects_names_alphabet = strategies.sampled_from(ascii_alphanumeric
                                                   + projects_names_delimiters)
