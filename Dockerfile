@@ -3,6 +3,8 @@ ARG PYTHON_IMAGE_VERSION
 
 FROM ${PYTHON_IMAGE}:${PYTHON_IMAGE_VERSION}
 
+RUN pip install --upgrade pip setuptools
+
 WORKDIR /opt/monty
 
 COPY template/ template/

@@ -3,6 +3,8 @@ ARG PYTHON_IMAGE_VERSION
 
 FROM ${PYTHON_IMAGE}:${PYTHON_IMAGE_VERSION}
 
+RUN pip install --upgrade pip setuptools
+
 WORKDIR /opt/_project_
 
 COPY _project_ _project_/
