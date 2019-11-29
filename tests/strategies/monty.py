@@ -10,9 +10,20 @@ from .services import (azure_logins,
                        dockerhub_logins,
                        github_logins)
 
-descriptions = strategies.text(
+
+def is_utf_8_string(string: str) -> bool:
+    try:
+        string.encode('utf-8').decode('utf-8')
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        return False
+    else:
+        return True
+
+
+descriptions = (strategies.text(
         strategies.characters(blacklist_categories=('Cs', 'Cc')),
         min_size=1)
+                .filter(is_utf_8_string))
 licenses_classifiers = monty.load_licenses_classifiers()
 licenses = strategies.sampled_from(
         [classifier.rsplit(' :: ', 1)[-1]
