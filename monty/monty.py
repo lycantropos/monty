@@ -127,7 +127,7 @@ settings_schema = Map({
 @click.command()
 @click.option('--version', '-v',
               is_flag=True,
-              help='Displays script version information.')
+              help='Displays script version information and exits.')
 @click.option('--settings-path', '-s',
               default='settings.yml',
               help='Path (absolute or relative) to settings '
