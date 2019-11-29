@@ -116,6 +116,7 @@ def load_github_user(login: str,
 settings_schema = Map({
     'azure_login': Str(),
     'dockerhub_login': Str(),
+    'description': Str(),
     'email': Str(),
     'github_login': Str(),
     'license': Str(),
