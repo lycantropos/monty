@@ -1,8 +1,8 @@
 azure_login: lycantropos
-dockerhub_login: lycantropos
 description: 'Python project generator.'
+dockerhub_login: lycantropos
 email: azatibrakov@gmail.com
-license: MIT License
 github_login: lycantropos
+license: MIT License
 project: monty
 version: 0.0.0

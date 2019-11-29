@@ -128,8 +128,8 @@ class NonEmptySingleLineStr(Str):
 
 settings_schema = Map({
     'azure_login': Str(),
-    'dockerhub_login': Str(),
     'description': NonEmptySingleLineStr(),
+    'dockerhub_login': Str(),
     'email': Str(),
     'github_login': Str(),
     'license': Str(),
