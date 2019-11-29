@@ -7,9 +7,6 @@ import _project_
 
 project_base_url = 'https://github.com/_github_login_/_project_/'
 
-install_requires = Path('requirements.txt').read_text()
-tests_require = Path('requirements-tests.txt').read_text()
-
 setup(name=_project_.__name__,
       packages=find_packages(exclude=('tests', 'tests.*')),
       version=_project_.__version__,
@@ -31,5 +28,4 @@ setup(name=_project_.__name__,
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
       python_requires='>=3.5',
-      install_requires=install_requires,
-      tests_require=tests_require)
+      install_requires=Path('requirements.txt').read_text(encoding='utf-8'))

@@ -4,16 +4,6 @@ from setuptools import setup
 
 project_base_url = 'https://github.com/lycantropos/monty/'
 
-install_requires = Path('requirements.txt').read_text()
-tests_require = Path('requirements-tests.txt').read_text()
-
-entry_points = {
-    'console_scripts':
-        [
-            'monty = monty.monty:main'
-        ],
-}
-
 setup(name='montemplate',
       version='0.3.0',
       description='Python project generator.',
@@ -35,6 +25,5 @@ setup(name='montemplate',
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
       python_requires='>=3.5',
-      install_requires=install_requires,
-      tests_require=tests_require,
-      entry_points=entry_points)
+      install_requires=Path('requirements.txt').read_text(encoding='utf-8'),
+      entry_points={'console_scripts': ['monty = monty.monty:main']})
