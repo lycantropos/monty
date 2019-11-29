@@ -153,6 +153,7 @@ def main(version: bool,
          output_dir: str,
          overwrite: bool,
          github_access_token: Optional[str]) -> None:
+    """Generates project from template."""
     if version:
         sys.stdout.write(__version__)
         return
