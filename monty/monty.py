@@ -24,6 +24,7 @@ import requests
 from strictyaml import (Map,
                         Str,
                         load)
+from strictyaml.yamllocation import YAMLChunk
 
 __version__ = '0.2.1'
 
@@ -113,10 +114,22 @@ def load_github_user(login: str,
         raise ValueError(error_message)
 
 
+class NonEmptySingleLineStr(Str):
+    def validate_scalar(self, chunk: YAMLChunk):
+        contents = chunk.contents
+        if not contents:
+            chunk.expecting_but_found('when expecting non-empty string',
+                                      contents)
+        elif len(contents.splitlines()) > 1:
+            chunk.expecting_but_found('when expecting single-line string',
+                                      contents)
+        return contents
+
+
 settings_schema = Map({
     'azure_login': Str(),
     'dockerhub_login': Str(),
-    'description': Str(),
+    'description': NonEmptySingleLineStr(),
     'email': Str(),
     'github_login': Str(),
     'license': Str(),
