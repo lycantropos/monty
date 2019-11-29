@@ -15,7 +15,7 @@ entry_points = {
 }
 
 setup(name='montemplate',
-      version='0.3.0-alpha',
+      version='0.3.0',
       description='Python project generator.',
       long_description=Path('README.md').read_text(encoding='utf-8'),
       long_description_content_type='text/markdown',
