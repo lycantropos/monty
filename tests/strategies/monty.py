@@ -24,13 +24,8 @@ descriptions = (strategies.text(
         strategies.characters(blacklist_categories=('Cs', 'Cc')),
         min_size=1)
                 .filter(is_utf_8_string))
-licenses_classifiers = monty.load_licenses_classifiers()
-licenses = strategies.sampled_from(
-        [classifier.rsplit(' :: ', 1)[-1]
-         for classifier in licenses_classifiers
-         if len([sub_classifier
-                 for sub_classifier in licenses_classifiers
-                 if sub_classifier.startswith(classifier)]) == 1])
+licenses_classifiers = strategies.sampled_from(
+        monty.load_licenses_classifiers())
 projects_names_delimiters = '.-_'
 projects_names_alphabet = strategies.sampled_from(ascii_alphanumeric
                                                   + projects_names_delimiters)
@@ -59,7 +54,7 @@ settings = strategies.fixed_dictionaries({
     'dockerhub_login': dockerhub_logins,
     'email': strategies.emails(),
     'github_login': github_logins,
-    'license': licenses,
+    'license_classifier': licenses_classifiers,
     'project': projects_names,
     'version': versions,
 })

@@ -3,6 +3,6 @@ description: 'Python project generator.'
 dockerhub_login: lycantropos
 email: azatibrakov@gmail.com
 github_login: lycantropos
-license: MIT License
+license_classifier: "License :: OSI Approved :: MIT License"
 project: monty
 version: 0.0.0

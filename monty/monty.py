@@ -115,7 +115,7 @@ def load_github_user(login: str,
 
 
 class NonEmptySingleLineStr(Str):
-    def validate_scalar(self, chunk: YAMLChunk):
+    def validate_scalar(self, chunk: YAMLChunk) -> str:
         contents = chunk.contents
         if not contents:
             chunk.expecting_but_found('when expecting non-empty string',
@@ -126,13 +126,23 @@ class NonEmptySingleLineStr(Str):
         return contents
 
 
+class LicenseClassifier(Str):
+    def validate_scalar(self, chunk: YAMLChunk) -> str:
+        contents = chunk.contents
+        if contents not in load_licenses_classifiers():
+            chunk.expecting_but_found('when expecting '
+                                      'license Trove classifier',
+                                      contents)
+        return contents
+
+
 settings_schema = Map({
     'azure_login': Str(),
     'description': NonEmptySingleLineStr(),
     'dockerhub_login': Str(),
     'email': Str(),
     'github_login': Str(),
-    'license': Str(),
+    'license_classifier': LicenseClassifier(),
     'project': Str(),
     'version': Str(),
 })
@@ -179,26 +189,8 @@ def main(version: bool,
     settings = (load(Path(settings_path).read_text(encoding='utf-8'),
                      schema=settings_schema)
                 .data)
-    license_name = settings['license']
-    licenses_classifiers = load_licenses_classifiers()
-    license_classifiers = [classifier
-                           for classifier in licenses_classifiers
-                           if license_name in classifier]
-    try:
-        license_classifier, = license_classifiers
-    except ValueError:
-        if not license_classifiers:
-            error_message = ('There is no classifier found '
-                             'for license "{license_name}".'
-                             .format(license_name=license_name))
-        else:
-            error_message = ('Found {count} conflicting classifiers '
-                             'for license "{license_name}".'
-                             .format(count=len(license_classifiers),
-                                     license_name=license_name))
-        raise click.BadArgumentUsage(error_message)
-    else:
-        settings['license_classifier'] = license_classifier
+    license_classifier = settings['license_classifier']
+    _, settings['license'] = license_classifier.rsplit(' :: ', 1)
     dockerhub_login = settings['dockerhub_login']
     github_login = settings['github_login']
     dockerhub_user = load_dockerhub_user(dockerhub_login)
