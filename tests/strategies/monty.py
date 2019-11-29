@@ -10,6 +10,9 @@ from .services import (azure_logins,
                        dockerhub_logins,
                        github_logins)
 
+descriptions = strategies.text(
+        strategies.characters(blacklist_categories=('Cs', 'Cc')),
+        min_size=1)
 licenses_classifiers = monty.load_licenses_classifiers()
 licenses = strategies.sampled_from(
         [classifier.rsplit(' :: ', 1)[-1]
@@ -41,6 +44,7 @@ versions = (strategies.tuples(versions_parts, versions_parts, versions_parts)
             .map('.'.join))
 settings = strategies.fixed_dictionaries({
     'azure_login': azure_logins,
+    'description': descriptions,
     'dockerhub_login': dockerhub_logins,
     'email': strategies.emails(),
     'github_login': github_logins,
