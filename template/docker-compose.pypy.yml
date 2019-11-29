@@ -15,5 +15,5 @@ services:
       - ./requirements.txt:/opt/_project_/requirements.txt
       - ./requirements-tests.txt:/opt/_project_/requirements-tests.txt
       - ./setup.py:/opt/_project_/setup.py
-      - ./setup.cfg:/opt/_project_/setup.cfg
+      - ./pytest.ini:/opt/_project_/pytest.ini
     entrypoint: pytest

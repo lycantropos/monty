@@ -16,5 +16,5 @@ services:
       - ./requirements.txt:/opt/monty/requirements.txt
       - ./requirements-tests.txt:/opt/monty/requirements-tests.txt
       - ./setup.py:/opt/monty/setup.py
-      - ./setup.cfg:/opt/monty/setup.cfg
+      - ./pytest.ini:/opt/monty/pytest.ini
     entrypoint: pytest

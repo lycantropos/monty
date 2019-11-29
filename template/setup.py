@@ -7,9 +7,6 @@ import _project_
 
 project_base_url = 'https://github.com/_github_login_/_project_/'
 
-setup_requires = [
-    'pytest-runner>=4.2',
-]
 install_requires = Path('requirements.txt').read_text()
 tests_require = Path('requirements-tests.txt').read_text()
 
@@ -28,6 +25,5 @@ setup(name=_project_.__name__,
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
       python_requires='>=3.5',
-      setup_requires=setup_requires,
       install_requires=install_requires,
       tests_require=tests_require)

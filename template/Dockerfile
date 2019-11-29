@@ -14,7 +14,7 @@ COPY requirements-tests.txt .
 RUN pip install --force-reinstall -r requirements-tests.txt
 
 COPY README.md .
-COPY setup.cfg .
+COPY pytest.ini .
 COPY setup.py .
 COPY _project_ _project_/
 COPY tests/ tests/
