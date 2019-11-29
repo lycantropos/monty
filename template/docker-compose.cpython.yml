@@ -5,8 +5,8 @@ services:
     build:
       context: .
       args:
-      - PYTHON_IMAGE=${CPYTHON_IMAGE_NAME}
-      - PYTHON_IMAGE_VERSION=${CPYTHON_IMAGE_VERSION}
+        - PYTHON_IMAGE=${CPYTHON_IMAGE_NAME}
+        - PYTHON_IMAGE_VERSION=${CPYTHON_IMAGE_VERSION}
     image: _dockerhub_login_/_project_-cpython:_version_
     volumes:
       - ./_project_/:/opt/_project_/_project_/
