@@ -176,7 +176,7 @@ def main(version: bool,
     output_dir = os.path.normpath(output_dir)
     os.makedirs(output_dir,
                 exist_ok=True)
-    settings = (load(Path(settings_path).read_text(),
+    settings = (load(Path(settings_path).read_text(encoding='utf-8'),
                      schema=settings_schema)
                 .data)
     license_name = settings['license']
