@@ -66,6 +66,17 @@ Install:
   pypy setup.py install
   ```
 
+Usage
+-----
+After updating `setting.yml` with related information
+```bash
+monty -o output
+```
+All available options can be obtained with
+```bash
+monty --help
+```
+
 Development
 -----------
 

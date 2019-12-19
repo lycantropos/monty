@@ -5,8 +5,8 @@ services:
     build:
       context: .
       args:
-      - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
-      - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
+        - PYTHON_IMAGE=${PYPY_IMAGE_NAME}
+        - PYTHON_IMAGE_VERSION=${PYPY_IMAGE_VERSION}
     image: _dockerhub_login_/_project_-pypy:_version_
     volumes:
       - ./_project_/:/opt/_project_/_project_/
@@ -15,5 +15,5 @@ services:
       - ./requirements.txt:/opt/_project_/requirements.txt
       - ./requirements-tests.txt:/opt/_project_/requirements-tests.txt
       - ./setup.py:/opt/_project_/setup.py
-      - ./setup.cfg:/opt/_project_/setup.cfg
+      - ./pytest.ini:/opt/_project_/pytest.ini
     entrypoint: pytest

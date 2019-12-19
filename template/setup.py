@@ -7,12 +7,6 @@ import _project_
 
 project_base_url = 'https://github.com/_github_login_/_project_/'
 
-setup_requires = [
-    'pytest-runner>=4.2',
-]
-install_requires = Path('requirements.txt').read_text()
-tests_require = Path('requirements-tests.txt').read_text()
-
 setup(name=_project_.__name__,
       packages=find_packages(exclude=('tests', 'tests.*')),
       version=_project_.__version__,
@@ -23,11 +17,15 @@ setup(name=_project_.__name__,
       author_email='_email_',
       classifiers=[
           '_license_classifier_',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Programming Language :: Python :: Implementation :: PyPy',
       ],
       license='_license_',
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
       python_requires='>=3.5',
-      setup_requires=setup_requires,
-      install_requires=install_requires,
-      tests_require=tests_require)
+      install_requires=Path('requirements.txt').read_text(encoding='utf-8'))

@@ -1,3 +1,3 @@
-"""Python project template."""
+"""_description_"""
 
 __version__ = '_version_'
