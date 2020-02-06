@@ -26,7 +26,7 @@ from strictyaml import (Map,
                         load)
 from strictyaml.yamllocation import YAMLChunk
 
-__version__ = '0.3.1-alpha'
+__version__ = '0.3.1'
 
 TRANSLATION_TABLE = bytes({7, 8, 9, 10, 12, 13, 27}
                           | set(range(0x20, 0x100))
