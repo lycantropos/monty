@@ -1,5 +1,4 @@
-sudo: false
-distro: xenial
+dist: xenial
 
 language: python
 
@@ -20,6 +19,7 @@ install:
 
 script:
   - pytest
+  - python -m doctest README.md
 
 after_success:
   - python -m codecov -f coverage.xml -X gcov
@@ -27,3 +27,14 @@ after_success:
 env:
   global:
     secure: 2D5nUFywZmwF2sQIJG+hOUbdmVL3dEvtWxgIrcPMYEbJ4wHYVHuVUvjrJZlyZjlb0A5OkvcTjbtMAJ9ELnmDR5XkD/PGnE1eBDQsQa+wfZ76L5QaT9GGTB/cvCbTUcncVpJ3DnfQaprmgqok8caLaqp0R7LovxnQi68al3EcbrPZTsZT4EhXflJxFlcyo15xJG+/Q6E731olqmHhtnngGOwHw0lCuYrMjphMn3Nc0XMToYY8WwL0h+kzSBUnvZBVUml8EhhlVv2AZoQSFujqD7UE7WVc/UEhSsI3JULHZ0hy2Px2bHZwUQdmBsoN+uxYUR62vXe9MIdn0dlEWogW2+g1cBDSHmOO0Tzju755Gg7I6ZEmd02AKkmbtoHMHbnkvN+kB7YLI+WCA6urXdqCmzYK4IMDb05n0aGovWo5sEZEID7bx8m6mia2tau97epDhN/v0kRjttubt1Bk5iJfXphcqILGp7WbDAs5Y2joanqoY1S2P8cumpBcktaP2WorT+UD8ZfUrLorTPIE2EPwfrh2I/1jqHq2c1qL8yOFZDqh1lI7xi/5la5tg4YKc/2+4dKRU5Z9jfY4vUhriu0qfmTdLurGrdXptAwFkBpcZWogHCILAplYiK2+9+FiB+OJIkJ67w+QTK3vn1o3X4BmNvvTo5bHQdMhDrCTlGl9IZ4=
+
+deploy:
+  provider: pypi
+  on:
+    branch: master
+    python: 3.5
+  user: __token__
+  password:
+    secure: HRc54tWsk9QbpbSHRTg97/WNayfyPnUDchUWdogwEwibPLlwMAWW7nW9T4PagdJ0Hp9BLJxlHcxbwzo025NrpQglkgGDDu/YtFc23OhKXOd39rBV1ieG29M3Ihlg+Q9jIsqUvyNh8JEJC6p2OnrTnBhdzxp8CBduJDRuwWQ3YoEdHK0nkSNfJzcqGw91FbEOMjzeSMRtBe4A9YwoKLdQ4Hni/YEuiOCOLv1q8cMSS73Zr0XGSrKZeinnIb9n6Jg0CClNK0PkezYDByq5MqZamG4/GZS/rhMFoTCDA4i3gkyzxuMNL7sJP6iWUnclMY9hyt5HD84Qlhda4u3VBodUMTA5GACjnv2lbuOmvBc/dXlPDs0NJOAnXtd7IGnxNRs9Ltqr1a42ji7eBDTVCuWPosdH00D/XwAgJiD4bih+NNBQS7upSU3vcLTzH7y4J3qlMQzIMsEsQAqOCE6Y3G3sAXY89xap8ShRhLKcOUOeNV55C2abwvWY5vQkV03ar7LCleAWx1cEdBBxJKkYTnoK3vbZv8qeL7NB3GDO9OxEKhGeQMIZoCZUFpNSygViP1R+4g0RuM62MXFUxNeAros/XZhDGDuJ2PCz3yu3ccUy1IBerROnNs52rUEBgcYw2WBv1OWrwxmcNYYN8mYKH9ffAB/JE42Ux6kRngBIZhiNUiE=
+  distributions: sdist bdist_wheel
+  skip_existing: true
