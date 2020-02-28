@@ -59,12 +59,16 @@ def load_user(login: str,
               base_url: str,
               version: str,
               users_method_url: Callable[..., str],
+              headers: Optional[Dict[str, str]] = None,
               **params: Any) -> requests.Response:
     users_url = users_method_url(base_url=base_url,
                                  version=version)
     user_url = urljoin(users_url, login)
 
-    with requests.Session() as session:
+    session = requests.Session()
+    if headers is not None:
+        session.headers.update(headers)
+    with session as session:
         return session.get(user_url,
                            params=params)
 
@@ -98,12 +102,14 @@ def load_github_user(login: str,
     users_method_url = partial(api_method_url,
                                'users')
     params = {}
-    if access_token is not None:
-        params['access_token'] = access_token
+    headers = (None
+               if access_token is None
+               else {'Authorization': 'access_token {}'.format(access_token)})
     response = load_user(login=login,
                          base_url=base_url,
                          version='',
                          users_method_url=users_method_url,
+                         headers=headers,
                          **params)
     user = response.json()
     try:
