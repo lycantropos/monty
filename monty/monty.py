@@ -118,7 +118,7 @@ def load_github_user(login: str,
                                'users')
     headers = (None
                if access_token is None
-               else {'Authorization': 'access_token {}'.format(access_token)})
+               else {'Authorization': 'token {}'.format(access_token)})
     response = load_user(login=login,
                          base_url=base_url,
                          version='',
