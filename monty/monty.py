@@ -5,8 +5,7 @@ import os
 import posixpath
 import shutil
 import sys
-from functools import (partial,
-                       reduce)
+from functools import partial
 from itertools import (filterfalse,
                        tee)
 from pathlib import Path
@@ -31,102 +30,6 @@ from strictyaml import (Map,
 from strictyaml.yamllocation import YAMLChunk
 
 __version__ = '1.0.0'
-
-urljoin = posixpath.join
-
-
-def api_method_url(method: str,
-                   *,
-                   base_url: str,
-                   version: str) -> str:
-    return urljoin(base_url, version, method)
-
-
-def load_licenses_classifiers(*,
-                              url: str = 'https://pypi.org/pypi?%3A'
-                                         'action=list_classifiers',
-                              license_classifier_prefix: str = 'License :: '
-                              ) -> List[str]:
-    with requests.get(url,
-                      stream=True) as response:
-        return [line
-                for line in response.iter_lines(decode_unicode=True)
-                if line.startswith(license_classifier_prefix)]
-
-
-def load_user(login: str,
-              *,
-              base_url: str,
-              version: str,
-              users_method_url: Callable[..., str],
-              headers: Optional[Dict[str, str]] = None) -> requests.Response:
-    users_url = users_method_url(base_url=base_url,
-                                 version=version)
-    user_url = urljoin(users_url, login)
-    session = requests.Session()
-    if headers is not None:
-        session.headers.update(headers)
-    with session as session:
-        return session.get(user_url)
-
-
-def load_dockerhub_user(login: str,
-                        *,
-                        base_url: str = 'https://hub.docker.com',
-                        version: str = 'v2') -> Dict[str, Any]:
-    users_method_url = partial(api_method_url,
-                               'users')
-    response = load_user(login=login,
-                         base_url=base_url,
-                         version=version,
-                         users_method_url=users_method_url)
-    try:
-        response.raise_for_status()
-    except requests.HTTPError as error:
-        error_message = ('Invalid login: "{login}". '
-                         'Not found via API request to "{url}".'
-                         .format(login=login,
-                                 url=response.url))
-        raise ValueError(error_message) from error
-    else:
-        return response.json()
-
-
-def load_github_repository(name: str, destination_path: str) -> None:
-    archive_url = 'https://github.com/{}/archive/master.zip'.format(name)
-    archive_bytes_stream = io.BytesIO(requests.get(archive_url).content)
-    with ZipFile(archive_bytes_stream) as zip_file:
-        for resource_info in zip_file.infolist():
-            is_directory = resource_info.filename[-1] == '/'
-            if is_directory:
-                continue
-            top_level_directory_name = Path(resource_info.filename).parts[0]
-            resource_info.filename = os.path.relpath(resource_info.filename,
-                                                     top_level_directory_name)
-            zip_file.extract(resource_info, destination_path)
-
-
-def load_github_user(login: str,
-                     *,
-                     base_url='https://api.github.com',
-                     access_token: Optional[str] = None) -> Dict[str, Any]:
-    users_method_url = partial(api_method_url,
-                               'users')
-    headers = (None
-               if access_token is None
-               else {'Authorization': 'token {}'.format(access_token)})
-    response = load_user(login=login,
-                         base_url=base_url,
-                         version='',
-                         users_method_url=users_method_url,
-                         headers=headers)
-    user = response.json()
-    try:
-        error_message = user['message']
-    except KeyError:
-        return user
-    else:
-        raise ValueError(error_message)
 
 
 class NonEmptySingleLineStr(Str):
@@ -203,7 +106,6 @@ def main(version: bool,
     if version:
         sys.stdout.write(__version__)
         return
-
     template_dir = os.path.normpath(template_dir)
     if template_repo is not None:
         load_github_repository(template_repo, template_dir)
@@ -237,21 +139,21 @@ def main(version: bool,
                              'but no "--overwrite" flag was set.'
                              .format(path=new_file_path))
             raise click.BadOptionUsage('overwrite', error_message)
-        rewrite_file(file_path, new_file_path,
-                     renderer=renderer)
+        render_file(file_path, new_file_path,
+                    renderer=renderer)
 
 
-def rewrite_file(source_path: str,
-                 destination_path: str,
-                 *,
-                 encoding: str = 'utf-8',
-                 renderer: Callable[[str], str]) -> None:
-    os.makedirs(os.path.dirname(destination_path),
-                exist_ok=True)
-    Path(destination_path).write_text(renderer(Path(source_path)
-                                               .read_text(encoding=encoding)),
-                                      encoding=encoding)
-    shutil.copymode(source_path, destination_path)
+def api_method_url(method: str,
+                   *,
+                   base_url: str,
+                   version: str) -> str:
+    return urljoin(base_url, version, method)
+
+
+def files_paths(path: str) -> Iterator[str]:
+    for root, _, files_names in os.walk(path):
+        for file_name in files_names:
+            yield os.path.join(root, file_name)
 
 
 def is_binary_file(path: str) -> bool:
@@ -267,10 +169,116 @@ def is_binary_string(bytes_string: bytes,
     return bool(bytes_string.translate(None, translation_table))
 
 
-def files_paths(path: str) -> Iterator[str]:
-    for root, _, files_names in os.walk(path):
-        for file_name in files_names:
-            yield os.path.join(root, file_name)
+def load_dockerhub_user(login: str,
+                        *,
+                        base_url: str = 'https://hub.docker.com',
+                        version: str = 'v2') -> Dict[str, Any]:
+    users_method_url = partial(api_method_url,
+                               'users')
+    response = load_user(login=login,
+                         base_url=base_url,
+                         version=version,
+                         users_method_url=users_method_url)
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as error:
+        error_message = ('Invalid login: "{login}". '
+                         'Not found via API request to "{url}".'
+                         .format(login=login,
+                                 url=response.url))
+        raise ValueError(error_message) from error
+    else:
+        return response.json()
+
+
+def load_github_repository(name: str, destination_path: str) -> None:
+    archive_url = 'https://github.com/{}/archive/master.zip'.format(name)
+    archive_bytes_stream = io.BytesIO(requests.get(archive_url).content)
+    with ZipFile(archive_bytes_stream) as zip_file:
+        for resource_info in zip_file.infolist():
+            is_directory = resource_info.filename[-1] == '/'
+            if is_directory:
+                continue
+            top_level_directory_name = Path(resource_info.filename).parts[0]
+            resource_info.filename = os.path.relpath(resource_info.filename,
+                                                     top_level_directory_name)
+            zip_file.extract(resource_info, destination_path)
+
+
+def load_github_user(login: str,
+                     *,
+                     base_url='https://api.github.com',
+                     access_token: Optional[str] = None) -> Dict[str, Any]:
+    users_method_url = partial(api_method_url,
+                               'users')
+    headers = (None
+               if access_token is None
+               else {'Authorization': 'token {}'.format(access_token)})
+    response = load_user(login=login,
+                         base_url=base_url,
+                         version='',
+                         users_method_url=users_method_url,
+                         headers=headers)
+    user = response.json()
+    try:
+        error_message = user['message']
+    except KeyError:
+        return user
+    else:
+        raise ValueError(error_message)
+
+
+def load_licenses_classifiers(*,
+                              url: str = 'https://pypi.org/pypi?%3A'
+                                         'action=list_classifiers',
+                              license_classifier_prefix: str = 'License :: '
+                              ) -> List[str]:
+    with requests.get(url,
+                      stream=True) as response:
+        return [line
+                for line in response.iter_lines(decode_unicode=True)
+                if line.startswith(license_classifier_prefix)]
+
+
+def load_user(login: str,
+              *,
+              base_url: str,
+              version: str,
+              users_method_url: Callable[..., str],
+              headers: Optional[Dict[str, str]] = None) -> requests.Response:
+    users_url = users_method_url(base_url=base_url,
+                                 version=version)
+    user_url = urljoin(users_url, login)
+    session = requests.Session()
+    if headers is not None:
+        session.headers.update(headers)
+    with session as session:
+        return session.get(user_url)
+
+
+def render(source: str, settings: Dict[str, str]) -> str:
+    return Template(source,
+                    keep_trailing_newline=True,
+                    trim_blocks=True).render(**settings)
+
+
+def render_file(source_path: str,
+                destination_path: str,
+                *,
+                encoding: str = 'utf-8',
+                renderer: Callable[[str], str]) -> None:
+    os.makedirs(os.path.dirname(destination_path),
+                exist_ok=True)
+    Path(destination_path).write_text(renderer(Path(source_path)
+                                               .read_text(encoding=encoding)),
+                                      encoding=encoding)
+    shutil.copymode(source_path, destination_path)
+
+
+def render_path_parts(*path_parts: str,
+                      renderer: Callable[[str], str]) -> Iterator[str]:
+    for path in path_parts:
+        yield renderer(path)
 
 
 def replace_files_paths(paths: Iterable[str],
@@ -281,39 +289,16 @@ def replace_files_paths(paths: Iterable[str],
                         ) -> Iterator[Tuple[str, str]]:
     def replace_file_path(file_path: str) -> str:
         root, file_name = os.path.split(file_path)
-        new_file_name, = replace_path_parts(file_name,
-                                            renderer=renderer)
+        new_file_name = renderer(file_name)
         new_root_parts = Path(root.replace(source_path, destination)).parts
-        new_root_parts = replace_path_parts(*new_root_parts,
-                                            renderer=renderer)
-        new_root = str(Path(*new_root_parts))
+        new_root = str(Path(*map(renderer, new_root_parts)))
         return os.path.join(new_root, new_file_name)
 
     original_paths, source_paths = tee(paths)
     yield from zip(original_paths, map(replace_file_path, source_paths))
 
 
-def replace_path_parts(*path_parts: str,
-                       renderer: Callable[[str], str]) -> Iterator[str]:
-    for path in path_parts:
-        yield renderer(path)
-
-
-def render(source: str, settings: Dict[str, str]) -> str:
-    return Template(source,
-                    keep_trailing_newline=True,
-                    trim_blocks=True).render(**settings)
-
-
-def replace_lines(lines: Iterable[str],
-                  *,
-                  replacers: List[Callable[[str], str]]) -> Iterator[str]:
-    def replace(string: str, replacer: Callable[[str], str]) -> str:
-        return replacer(string)
-
-    replace_items = partial(reduce, replace, replacers)
-    yield from map(replace_items, lines)
-
+urljoin = posixpath.join
 
 if __name__ == '__main__':
     main()
