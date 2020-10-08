@@ -57,8 +57,9 @@ def test_main(settings: Dict[str, str],
                                      + template_directory_files_count)
         assert files_count_after_overwrite == files_count_after
 
-        with pytest.raises(click.BadOptionUsage):
-            command(overwrite=False)
+        if template_directory_files_count:
+            with pytest.raises(click.BadOptionUsage):
+                command(overwrite=False)
 
 
 @contextmanager
