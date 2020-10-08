@@ -113,7 +113,7 @@ def load_github_repository(name: str, destination_path: str) -> None:
 def load_github_user(login: str,
                      *,
                      base_url='https://api.github.com',
-                     access_token: str = None) -> Dict[str, Any]:
+                     access_token: Optional[str] = None) -> Dict[str, Any]:
     users_method_url = partial(api_method_url,
                                'users')
     headers = (None
