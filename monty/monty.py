@@ -32,10 +32,6 @@ from strictyaml.yamllocation import YAMLChunk
 
 __version__ = '1.0.0-alpha'
 
-TRANSLATION_TABLE = bytes({7, 8, 9, 10, 12, 13, 27}
-                          | set(range(0x20, 0x100))
-                          - {0x7f})
-
 urljoin = posixpath.join
 
 
@@ -265,7 +261,9 @@ def is_binary_file(path: str) -> bool:
 
 def is_binary_string(bytes_string: bytes,
                      *,
-                     translation_table: bytes = TRANSLATION_TABLE) -> bool:
+                     translation_table: bytes = bytes({7, 8, 9, 10, 12, 13, 27}
+                                                      | set(range(0x20, 0x100))
+                                                      - {0x7f})) -> bool:
     return bool(bytes_string.translate(None, translation_table))
 
 
