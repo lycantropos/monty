@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Python project generator."""
+import io
 import os
 import posixpath
 import shutil
@@ -18,6 +19,7 @@ from typing import (Any,
                     Optional,
                     Tuple,
                     cast)
+from zipfile import ZipFile
 
 import click
 import requests
@@ -94,6 +96,20 @@ def load_dockerhub_user(login: str,
         return response.json()
 
 
+def load_github_repository(name: str, destination_path: str) -> None:
+    archive_url = 'https://github.com/{}/archive/master.zip'.format(name)
+    archive_bytes_stream = io.BytesIO(requests.get(archive_url).content)
+    with ZipFile(archive_bytes_stream) as zip_file:
+        for resource_info in zip_file.infolist():
+            is_directory = resource_info.filename[-1] == '/'
+            if is_directory:
+                continue
+            top_level_directory_name = Path(resource_info.filename).parts[0]
+            resource_info.filename = os.path.relpath(resource_info.filename,
+                                                     top_level_directory_name)
+            zip_file.extract(resource_info, destination_path)
+
+
 def load_github_user(login: str,
                      *,
                      base_url='https://api.github.com',
@@ -162,10 +178,13 @@ settings_schema = Map({
               default='settings.yml',
               help='Path (absolute or relative) to settings '
                    '(defaults to "settings.yml").')
-@click.option('--template-dir', '-t',
+@click.option('--template-dir',
               default='template',
-              help='Path (absolute or relative) to template project '
-                   '(defaults to "template").')
+              help='Path (absolute or relative) to template project.')
+@click.option('--template-repo',
+              default=None,
+              help='Github repository in format `owner name/repository name` '
+                   'with template.')
 @click.option('--output-dir', '-o',
               default='.',
               help='Path (absolute or relative) to output directory '
@@ -180,6 +199,7 @@ settings_schema = Map({
 def main(version: bool,
          settings_path: str,
          template_dir: str,
+         template_repo: Optional[str],
          output_dir: str,
          overwrite: bool,
          github_access_token: Optional[str]) -> None:
@@ -189,6 +209,8 @@ def main(version: bool,
         return
 
     template_dir = os.path.normpath(template_dir)
+    if template_repo is not None:
+        load_github_repository(template_repo, template_dir)
     output_dir = os.path.normpath(output_dir)
     os.makedirs(output_dir,
                 exist_ok=True)
