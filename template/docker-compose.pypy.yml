@@ -1,19 +1,19 @@
 version: '3'
 
 services:
-  _project_-pypy:
+  {{project}}-pypy:
     build:
       context: .
       args:
         - IMAGE_NAME=${PYPY_IMAGE_NAME}
         - IMAGE_VERSION=${PYPY_IMAGE_VERSION}
-    image: _dockerhub_login_/_project_-pypy:_version_
+    image: {{dockerhub_login}}/{{project}}-pypy:{{version}}
     volumes:
-      - ./_project_/:/opt/_project_/_project_/
-      - ./tests/:/opt/_project_/tests/
-      - ./README.md:/opt/_project_/README.md
-      - ./requirements.txt:/opt/_project_/requirements.txt
-      - ./requirements-tests.txt:/opt/_project_/requirements-tests.txt
-      - ./setup.py:/opt/_project_/setup.py
-      - ./pytest.ini:/opt/_project_/pytest.ini
+      - ./{{project}}/:/opt/{{project}}/{{project}}/
+      - ./tests/:/opt/{{project}}/tests/
+      - ./README.md:/opt/{{project}}/README.md
+      - ./requirements.txt:/opt/{{project}}/requirements.txt
+      - ./requirements-tests.txt:/opt/{{project}}/requirements-tests.txt
+      - ./setup.py:/opt/{{project}}/setup.py
+      - ./pytest.ini:/opt/{{project}}/pytest.ini
     entrypoint: pytest

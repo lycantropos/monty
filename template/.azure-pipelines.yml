@@ -4,30 +4,14 @@ jobs:
       vmImage: 'windows-latest'
     strategy:
       matrix:
-        Python35_x86:
-          python.version: '3.5'
+{% for minor in range(min_python_version.split(".")[1]|int, (max_python_version.split(".")[1])|int + 1) %}
+        Python3{{minor}}_x86:
+          python.version: '3.{{minor}}'
           python.architecture: 'x86'
-        Python35_x64:
-          python.version: '3.5'
+        Python3{{minor}}_x64:
+          python.version: '3.{{minor}}'
           python.architecture: 'x64'
-        Python36_x86:
-          python.version: '3.6'
-          python.architecture: 'x86'
-        Python36_x64:
-          python.version: '3.6'
-          python.architecture: 'x64'
-        Python37_x86:
-          python.version: '3.7'
-          python.architecture: 'x86'
-        Python37_x64:
-          python.version: '3.7'
-          python.architecture: 'x64'
-        Python38_x86:
-          python.version: '3.8'
-          python.architecture: 'x86'
-        Python38_x64:
-          python.version: '3.8'
-          python.architecture: 'x64'
+{% endfor %}
         PyPy3:
           python.version: 'pypy3'
           python.architecture: 'x86'
@@ -60,14 +44,10 @@ jobs:
       vmImage: 'macOS-latest'
     strategy:
       matrix:
-        Python35:
-          python.version: '3.5'
-        Python36:
-          python.version: '3.6'
-        Python37:
-          python.version: '3.7'
-        Python38:
-          python.version: '3.8'
+{% for minor in range(min_python_version.split(".")[1]|int, (max_python_version.split(".")[1])|int + 1) %}
+        Python3{{minor}}:
+          python.version: '3.{{minor}}'
+{% endfor %}
         PyPy3:
           python.version: 'pypy3'
 

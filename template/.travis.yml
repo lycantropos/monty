@@ -6,11 +6,8 @@ matrix:
   include:
     - python: pypy3.5-7.0.0
     - python: pypy3.6-7.1.1
-    - python: 3.5
-    - python: 3.6
-    - python: 3.7
-    - python: 3.8
-
+{% for minor in range(min_python_version.split(".")[1]|int, (max_python_version.split(".")[1])|int + 1) %}    - python: 3.{{minor}}
+{% endfor %}
 install:
   - python -m pip install --upgrade pip setuptools
   - python -m pip install --upgrade codecov

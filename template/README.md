@@ -1,17 +1,17 @@
-_project_
-=========
+{{project}}
+{{"=" * project|length}}
 
-[![](https://travis-ci.com/_github_login_/_project_.svg?branch=master)](https://travis-ci.com/_github_login_/_project_ "Travis CI")
-[![](https://dev.azure.com/_azure_login_/_project_/_apis/build/status/_github_login_._project_?branchName=master)](https://dev.azure.com/_azure_login_/_project_/_build/latest?branchName=master "Azure Pipelines")
-[![](https://codecov.io/gh/_github_login_/_project_/branch/master/graph/badge.svg)](https://codecov.io/gh/_github_login_/_project_ "Codecov")
-[![](https://img.shields.io/github/license/_github_login_/_project_.svg)](https://github.com/_github_login_/_project_/blob/master/LICENSE "License")
-[![](https://badge.fury.io/py/_project_.svg)](https://badge.fury.io/py/_project_ "PyPI")
+[![](https://travis-ci.com/{{github_login}}/{{project}}.svg?branch=master)](https://travis-ci.com/{{github_login}}/{{project}} "Travis CI")
+[![](https://dev.azure.com/{{azure_login}}/{{project}}/_apis/build/status/{{github_login}}.{{project}}?branchName=master)](https://dev.azure.com/{{azure_login}}/{{project}}/_build/latest?branchName=master "Azure Pipelines")
+[![](https://codecov.io/gh/{{github_login}}/{{project}}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{github_login}}/{{project}} "Codecov")
+[![](https://img.shields.io/github/license/{{github_login}}/{{project}}.svg)](https://github.com/{{github_login}}/{{project}}/blob/master/LICENSE "License")
+[![](https://badge.fury.io/py/{{project}}.svg)](https://badge.fury.io/py/{{project}} "PyPI")
 
 In what follows
-- `python` is an alias for `python3.5` or any later
-version (`python3.6` and so on),
-- `pypy` is an alias for `pypy3.5` or any later
-version (`pypy3.6` and so on).
+- `python` is an alias for `python{{min_python_version.split('.')[:2]|join('.')}}` or any later
+version (`python{{min_python_version.split('.')[0]}}.{{min_python_version.split('.')[1]|int + 1}}` and so on),
+- `pypy` is an alias for `pypy{{min_python_version.split('.')[:2]|join('.')}}` or any later
+version (`pypy{{min_python_version.split('.')[0]}}.{{min_python_version.split('.')[1]|int + 1}}` and so on).
 
 Installation
 ------------
@@ -31,19 +31,19 @@ Install the latest `pip` & `setuptools` packages versions:
 Download and install the latest stable version from `PyPI` repository:
 - with `CPython`
   ```bash
-  python -m pip install --upgrade _project_
+  python -m pip install --upgrade {{project}}
   ```
 - with `PyPy`
   ```bash
-  pypy -m pip install --upgrade _project_
+  pypy -m pip install --upgrade {{project}}
   ```
 
 ### Developer
 
 Download the latest version from `GitHub` repository
 ```bash
-git clone https://github.com/_github_login_/_project_.git
-cd _project_
+git clone https://github.com/{{github_login}}/{{project}}.git
+cd {{project}}
 ```
 
 Install dependencies:

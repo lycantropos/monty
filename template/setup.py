@@ -3,29 +3,28 @@ from pathlib import Path
 from setuptools import (find_packages,
                         setup)
 
-import _project_
+import {{project}}
 
-project_base_url = 'https://github.com/_github_login_/_project_/'
+project_base_url = 'https://github.com/{{github_login}}/{{project}}/'
 
-setup(name=_project_.__name__,
+setup(name={{project}}.__name__,
       packages=find_packages(exclude=('tests', 'tests.*')),
-      version=_project_.__version__,
-      description=_project_.__doc__,
+      version={{project}}.__version__,
+      description={{project}}.__doc__,
       long_description=Path('README.md').read_text(encoding='utf-8'),
       long_description_content_type='text/markdown',
-      author='_full_name_',
-      author_email='_email_',
+      author='{{full_name}}',
+      author_email='{{email}}',
       classifiers=[
-          '_license_classifier_',
-          'Programming Language :: Python :: 3.5',
-          'Programming Language :: Python :: 3.6',
-          'Programming Language :: Python :: 3.7',
-          'Programming Language :: Python :: 3.8',
+          '{{license_classifier}}',
+{% for minor in range(min_python_version.split(".")[1]|int, (max_python_version.split(".")[1])|int + 1) %}
+          'Programming Language :: Python :: 3.{{minor}}',
+{% endfor %}
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
       ],
-      license='_license_',
+      license='{{license}}',
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
-      python_requires='>=3.5',
+      python_requires='>={{min_python_version}}',
       install_requires=Path('requirements.txt').read_text(encoding='utf-8'))

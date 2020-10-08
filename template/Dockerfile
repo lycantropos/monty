@@ -5,7 +5,7 @@ FROM ${IMAGE_NAME}:${IMAGE_VERSION}
 
 RUN pip install --upgrade pip setuptools
 
-WORKDIR /opt/_project_
+WORKDIR /opt/{{project}}
 
 COPY requirements.txt .
 RUN pip install --force-reinstall -r requirements.txt
@@ -16,5 +16,5 @@ RUN pip install --force-reinstall -r requirements-tests.txt
 COPY README.md .
 COPY pytest.ini .
 COPY setup.py .
-COPY _project_ _project_/
+COPY {{project}} {{project}}/
 COPY tests/ tests/

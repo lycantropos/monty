@@ -2,7 +2,6 @@
 """Python project generator."""
 import os
 import posixpath
-import re
 import shutil
 import sys
 from functools import (partial,
@@ -17,11 +16,14 @@ from typing import (Any,
                     Iterator,
                     List,
                     Optional,
-                    Tuple)
+                    Tuple,
+                    cast)
 
 import click
 import requests
+from jinja2 import Template
 from strictyaml import (Map,
+                        Regex,
                         Str,
                         load)
 from strictyaml.yamllocation import YAMLChunk
@@ -137,6 +139,7 @@ class LicenseClassifier(Str):
         return contents
 
 
+version_pattern = r'\d+\.\d+(\.\d+)?'
 settings_schema = Map({
     'azure_login': Str(),
     'description': NonEmptySingleLineStr(),
@@ -144,8 +147,10 @@ settings_schema = Map({
     'email': Str(),
     'github_login': Str(),
     'license_classifier': LicenseClassifier(),
-    'project': Str(),
-    'version': Str(),
+    'project': Regex(r'\w+([\.-]\w+)*'),
+    'version': Regex(version_pattern),
+    'min_python_version': Regex(version_pattern),
+    'max_python_version': Regex(version_pattern),
 })
 
 
@@ -199,14 +204,14 @@ def main(version: bool,
                                    access_token=github_access_token)
     settings.setdefault('full_name',
                         github_user['name'] or dockerhub_user['full_name'])
-    replacements = {'_{}_'.format(key): value
-                    for key, value in settings.items()}
     non_binary_files_paths = filterfalse(is_binary_file,
                                          files_paths(template_dir))
+    renderer = cast(Callable[[str], str], partial(render,
+                                                  settings=settings))
     paths_pairs = replace_files_paths(non_binary_files_paths,
-                                      src=template_dir,
-                                      dst=output_dir,
-                                      replacements=replacements)
+                                      source_path=template_dir,
+                                      destination=output_dir,
+                                      renderer=renderer)
     for file_path, new_file_path in paths_pairs:
         if not overwrite and os.path.exists(new_file_path):
             error_message = ('Trying to overwrite '
@@ -214,29 +219,21 @@ def main(version: bool,
                              'but no "--overwrite" flag was set.'
                              .format(path=new_file_path))
             raise click.BadOptionUsage('overwrite', error_message)
-        replacers = [partial(re.compile(r'\b{}\b'.format(origin)).sub,
-                             replacement)
-                     for origin, replacement in replacements.items()]
         rewrite_file(file_path, new_file_path,
-                     replacers=replacers)
+                     renderer=renderer)
 
 
-def rewrite_file(src_file_path: str,
-                 dst_file_path: str,
+def rewrite_file(source_path: str,
+                 destination_path: str,
                  *,
-                 replacers: List[Callable[[str], str]]) -> None:
-    with open(src_file_path,
-              encoding='utf-8') as file:
-        new_lines = list(replace_lines(file,
-                                       replacers=replacers))
-    directory_path = os.path.dirname(dst_file_path)
-    os.makedirs(directory_path,
+                 encoding: str = 'utf-8',
+                 renderer: Callable[[str], str]) -> None:
+    os.makedirs(os.path.dirname(destination_path),
                 exist_ok=True)
-    with open(dst_file_path,
-              mode='w',
-              encoding='utf-8') as new_file:
-        new_file.writelines(new_lines)
-    shutil.copymode(src_file_path, dst_file_path)
+    Path(destination_path).write_text(renderer(Path(source_path)
+                                               .read_text(encoding=encoding)),
+                                      encoding=encoding)
+    shutil.copymode(source_path, destination_path)
 
 
 def is_binary_file(path: str) -> bool:
@@ -258,27 +255,34 @@ def files_paths(path: str) -> Iterator[str]:
 
 def replace_files_paths(paths: Iterable[str],
                         *,
-                        src: str,
-                        dst: str,
-                        replacements: Dict[str, str]
+                        source_path: str,
+                        destination: str,
+                        renderer: Callable[[str], str]
                         ) -> Iterator[Tuple[str, str]]:
     def replace_file_path(file_path: str) -> str:
         root, file_name = os.path.split(file_path)
         new_file_name, = replace_path_parts(file_name,
-                                            replacements=replacements)
-        new_root_parts = Path(root.replace(src, dst)).parts
+                                            renderer=renderer)
+        new_root_parts = Path(root.replace(source_path, destination)).parts
         new_root_parts = replace_path_parts(*new_root_parts,
-                                            replacements=replacements)
+                                            renderer=renderer)
         new_root = str(Path(*new_root_parts))
         return os.path.join(new_root, new_file_name)
 
-    first_paths, second_paths = tee(paths)
-    yield from zip(first_paths, map(replace_file_path, second_paths))
+    original_paths, source_paths = tee(paths)
+    yield from zip(original_paths, map(replace_file_path, source_paths))
 
 
 def replace_path_parts(*path_parts: str,
-                       replacements: Dict[str, str]) -> Iterator[str]:
-    yield from map(replacements.get, path_parts, path_parts)
+                       renderer: Callable[[str], str]) -> Iterator[str]:
+    for path in path_parts:
+        yield renderer(path)
+
+
+def render(source: str, settings: Dict[str, str]) -> str:
+    return Template(source,
+                    keep_trailing_newline=True,
+                    trim_blocks=True).render(**settings)
 
 
 def replace_lines(lines: Iterable[str],
