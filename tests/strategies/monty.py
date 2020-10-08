@@ -57,6 +57,8 @@ settings = strategies.fixed_dictionaries({
     'license_classifier': licenses_classifiers,
     'project': projects_names,
     'version': versions,
+    'min_python_version': versions,
+    'max_python_version': versions,
 })
 template_directories_paths = strategies.just(os.path.abspath('template'))
 temporary_directories = strategies.builds(tempfile.TemporaryDirectory)
