@@ -142,7 +142,7 @@ def main(version: bool,
 def clear_on_overwrite(path: str, overwrite: bool) -> None:
     if os.path.exists(path):
         if overwrite:
-            os.rmdir(path)
+            shutil.rmtree(path)
         elif os.listdir(path):
             error_message = ('Trying to overwrite '
                              'directory "{path}", '
