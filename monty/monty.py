@@ -108,26 +108,10 @@ def main(version: bool,
         return
     template_dir = os.path.normpath(template_dir)
     if template_repo is not None:
-        if os.path.exists(template_dir):
-            if overwrite:
-                os.rmdir(template_dir)
-            elif os.listdir(template_dir):
-                error_message = ('Trying to overwrite '
-                                 'directory "{path}", '
-                                 'but no "--overwrite" flag was set.'
-                                 .format(path=template_dir))
-                raise click.BadOptionUsage('overwrite', error_message)
+        clear_on_overwrite(template_dir, overwrite)
         load_github_repository(template_repo, template_dir)
     output_dir = os.path.normpath(output_dir)
-    if os.path.exists(output_dir):
-        if overwrite:
-            os.rmdir(output_dir)
-        elif os.listdir(output_dir):
-            error_message = ('Trying to overwrite '
-                             'directory "{path}", '
-                             'but no "--overwrite" flag was set.'
-                             .format(path=output_dir))
-            raise click.BadOptionUsage('overwrite', error_message)
+    clear_on_overwrite(output_dir, overwrite)
     os.makedirs(output_dir,
                 exist_ok=True)
     settings = (load(Path(settings_path).read_text(encoding='utf-8'),
@@ -153,6 +137,18 @@ def main(version: bool,
     for file_path, new_file_path in paths_pairs:
         render_file(file_path, new_file_path,
                     renderer=renderer)
+
+
+def clear_on_overwrite(path: str, overwrite: bool) -> None:
+    if os.path.exists(path):
+        if overwrite:
+            os.rmdir(path)
+        elif os.listdir(path):
+            error_message = ('Trying to overwrite '
+                             'directory "{path}", '
+                             'but no "--overwrite" flag was set.'
+                             .format(path=path))
+            raise click.BadOptionUsage('overwrite', error_message)
 
 
 def api_method_url(method: str,
