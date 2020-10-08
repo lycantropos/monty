@@ -108,8 +108,26 @@ def main(version: bool,
         return
     template_dir = os.path.normpath(template_dir)
     if template_repo is not None:
+        if os.path.exists(template_dir):
+            if overwrite:
+                os.rmdir(template_dir)
+            elif os.listdir(template_dir):
+                error_message = ('Trying to overwrite '
+                                 'directory "{path}", '
+                                 'but no "--overwrite" flag was set.'
+                                 .format(path=template_dir))
+                raise click.BadOptionUsage('overwrite', error_message)
         load_github_repository(template_repo, template_dir)
     output_dir = os.path.normpath(output_dir)
+    if os.path.exists(output_dir):
+        if overwrite:
+            os.rmdir(output_dir)
+        elif os.listdir(output_dir):
+            error_message = ('Trying to overwrite '
+                             'directory "{path}", '
+                             'but no "--overwrite" flag was set.'
+                             .format(path=output_dir))
+            raise click.BadOptionUsage('overwrite', error_message)
     os.makedirs(output_dir,
                 exist_ok=True)
     settings = (load(Path(settings_path).read_text(encoding='utf-8'),
@@ -133,12 +151,6 @@ def main(version: bool,
                                       destination=output_dir,
                                       renderer=renderer)
     for file_path, new_file_path in paths_pairs:
-        if not overwrite and os.path.exists(new_file_path):
-            error_message = ('Trying to overwrite '
-                             'existing file "{path}", '
-                             'but no "--overwrite" flag was set.'
-                             .format(path=new_file_path))
-            raise click.BadOptionUsage('overwrite', error_message)
         render_file(file_path, new_file_path,
                     renderer=renderer)
 
