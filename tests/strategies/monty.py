@@ -1,4 +1,3 @@
-import os
 import tempfile
 from functools import partial
 
@@ -60,5 +59,7 @@ settings = strategies.fixed_dictionaries({
     'min_python_version': versions,
     'max_python_version': versions,
 })
-template_directories_paths = strategies.just(os.path.abspath('template'))
+template_directories_paths = strategies.builds(tempfile.mkdtemp)
+template_repositories_names = strategies.just(
+        'lycantropos/monty-cpython-pypy-template')
 temporary_directories = strategies.builds(tempfile.TemporaryDirectory)
