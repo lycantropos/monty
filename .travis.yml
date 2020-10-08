@@ -24,10 +24,6 @@ script:
 after_success:
   - python -m codecov -f coverage.xml -X gcov
 
-env:
-  global:
-    secure: 2D5nUFywZmwF2sQIJG+hOUbdmVL3dEvtWxgIrcPMYEbJ4wHYVHuVUvjrJZlyZjlb0A5OkvcTjbtMAJ9ELnmDR5XkD/PGnE1eBDQsQa+wfZ76L5QaT9GGTB/cvCbTUcncVpJ3DnfQaprmgqok8caLaqp0R7LovxnQi68al3EcbrPZTsZT4EhXflJxFlcyo15xJG+/Q6E731olqmHhtnngGOwHw0lCuYrMjphMn3Nc0XMToYY8WwL0h+kzSBUnvZBVUml8EhhlVv2AZoQSFujqD7UE7WVc/UEhSsI3JULHZ0hy2Px2bHZwUQdmBsoN+uxYUR62vXe9MIdn0dlEWogW2+g1cBDSHmOO0Tzju755Gg7I6ZEmd02AKkmbtoHMHbnkvN+kB7YLI+WCA6urXdqCmzYK4IMDb05n0aGovWo5sEZEID7bx8m6mia2tau97epDhN/v0kRjttubt1Bk5iJfXphcqILGp7WbDAs5Y2joanqoY1S2P8cumpBcktaP2WorT+UD8ZfUrLorTPIE2EPwfrh2I/1jqHq2c1qL8yOFZDqh1lI7xi/5la5tg4YKc/2+4dKRU5Z9jfY4vUhriu0qfmTdLurGrdXptAwFkBpcZWogHCILAplYiK2+9+FiB+OJIkJ67w+QTK3vn1o3X4BmNvvTo5bHQdMhDrCTlGl9IZ4=
-
 deploy:
   provider: pypi
   on:
