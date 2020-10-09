@@ -5,7 +5,8 @@ from contextlib import (ExitStack,
 from functools import partial
 from typing import (Any,
                     Dict,
-                    Iterable)
+                    Iterable,
+                    Optional)
 
 import click
 import pytest
@@ -19,10 +20,12 @@ from tests.utils import Secured
 
 @given(strategies.settings,
        strategies.template_directories_paths,
+       strategies.template_repositories_names,
        strategies.temporary_directories,
        strategies.github_access_tokens)
 def test_main(settings: Dict[str, str],
               template_directory_path: str,
+              template_repository_name: Optional[str],
               temporary_directory: tempfile.TemporaryDirectory,
               github_access_token: Secured) -> None:
     with ExitStack() as stack:
@@ -33,14 +36,16 @@ def test_main(settings: Dict[str, str],
                           version=False,
                           settings_path=settings_path,
                           template_dir=template_directory_path,
+                          template_repo=template_repository_name,
                           output_dir=output_dir,
                           github_access_token=github_access_token.value)
 
-        template_directory_files_count = capacity(monty.files_paths(
-                template_directory_path))
         files_count_before = capacity(monty.files_paths(output_dir))
 
         command(overwrite=False)
+
+        template_directory_files_count = capacity(monty.files_paths(
+                template_directory_path))
 
         files_count_after = capacity(monty.files_paths(output_dir))
 
@@ -52,8 +57,9 @@ def test_main(settings: Dict[str, str],
                                      + template_directory_files_count)
         assert files_count_after_overwrite == files_count_after
 
-        with pytest.raises(click.BadOptionUsage):
-            command(overwrite=False)
+        if template_directory_files_count:
+            with pytest.raises(click.BadOptionUsage):
+                command(overwrite=False)
 
 
 @contextmanager
