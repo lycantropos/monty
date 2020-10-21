@@ -110,6 +110,7 @@ def main(version: bool,
         return
     template_dir = os.path.normpath(template_dir)
     if template_repo is not None:
+        template_dir = os.path.join(template_dir, template_repo)
         latest_commit_info, = (requests.get('https://api.github.com/repos/{}'
                                             '/commits?per_page=1'
                                             .format(template_repo)).json())
