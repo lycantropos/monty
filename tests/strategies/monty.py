@@ -59,7 +59,8 @@ settings = strategies.fixed_dictionaries({
     'min_python_version': versions,
     'max_python_version': versions,
 })
-template_directories_paths = strategies.builds(tempfile.mkdtemp)
-template_repositories_names = strategies.none() | strategies.just(
-        'lycantropos/monty-cpython-pypy-template')
+templates_directories_paths = strategies.builds(tempfile.mkdtemp)
+template_repositories_names = strategies.sampled_from(
+        ['lycantropos/monty-cpython-pypy-template',
+         'lycantropos/monty-cpp-bind-port-template'])
 temporary_directories = strategies.builds(tempfile.TemporaryDirectory)

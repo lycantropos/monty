@@ -19,12 +19,12 @@ from tests.utils import Secured
 
 
 @given(strategies.settings,
-       strategies.template_directories_paths,
+       strategies.templates_directories_paths,
        strategies.template_repositories_names,
        strategies.temporary_directories,
        strategies.github_access_tokens)
 def test_main(settings: Dict[str, str],
-              template_directory_path: str,
+              templates_directory_path: str,
               template_repository_name: Optional[str],
               temporary_directory: tempfile.TemporaryDirectory,
               github_access_token: Secured) -> None:
@@ -35,17 +35,17 @@ def test_main(settings: Dict[str, str],
         command = partial(monty.main.callback,
                           version=False,
                           settings_path=settings_path,
-                          template_dir=template_directory_path,
-                          template_repo=template_repository_name,
+                          templates_dir=templates_directory_path,
                           output_dir=output_dir,
-                          github_access_token=github_access_token.value)
+                          github_access_token=github_access_token.value,
+                          template_repo=template_repository_name)
 
         files_count_before = capacity(monty.files_paths(output_dir))
 
         command(overwrite=False)
 
         template_directory_files_count = capacity(monty.files_paths(
-                template_directory_path))
+                templates_directory_path))
 
         files_count_after = capacity(monty.files_paths(output_dir))
 
