@@ -31,7 +31,7 @@ from strictyaml import (Map,
                         load)
 from strictyaml.yamllocation import YAMLChunk
 
-__version__ = '1.0.1'
+__version__ = '1.1.0-alpha'
 
 
 class NonEmptySingleLineStr(Str):
