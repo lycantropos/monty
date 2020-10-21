@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Python project generator."""
+import calendar
 import io
 import os
 import posixpath
 import shutil
 import sys
+from datetime import datetime
 from functools import partial
 from itertools import (filterfalse,
                        tee)
@@ -108,10 +110,28 @@ def main(version: bool,
         return
     template_dir = os.path.normpath(template_dir)
     if template_repo is not None:
-        clear_on_overwrite(template_dir, overwrite)
-        load_github_repository(template_repo, template_dir)
+        latest_commit_info, = (requests.get('https://api.github.com/repos/{}'
+                                            '/commits?per_page=1'
+                                            .format(template_repo)).json())
+        latest_commit_datetime_string = (
+            latest_commit_info['commit']['committer']['date'])
+        latest_commit_timestamp = calendar.timegm(
+                datetime.strptime(latest_commit_datetime_string,
+                                  '%Y-%m-%dT%H:%M:%SZ').utctimetuple())
+        os.makedirs(template_dir,
+                    exist_ok=True)
+        previous_versions_paths = os.listdir(template_dir)
+        template_dir = os.path.join(template_dir, str(latest_commit_timestamp))
+        if previous_versions_paths:
+            previous_version_path, = previous_versions_paths
+            previous_version_timestamp = int(
+                    os.path.basename(previous_version_path))
+            if previous_version_timestamp < latest_commit_timestamp:
+                shutil.rmtree(previous_version_path)
+                load_github_repository(template_repo, template_dir)
+        else:
+            load_github_repository(template_repo, template_dir)
     output_dir = os.path.normpath(output_dir)
-    clear_on_overwrite(output_dir, overwrite)
     os.makedirs(output_dir,
                 exist_ok=True)
     settings = (load(Path(settings_path).read_text(encoding='utf-8'),
@@ -135,20 +155,13 @@ def main(version: bool,
                                       destination=output_dir,
                                       renderer=renderer)
     for file_path, new_file_path in paths_pairs:
+        if not overwrite and os.path.exists(new_file_path):
+            raise click.BadOptionUsage('overwrite',
+                                       'Trying to overwrite "{path}", '
+                                       'but no "--overwrite" flag was set.'
+                                       .format(path=new_file_path))
         render_file(file_path, new_file_path,
                     renderer=renderer)
-
-
-def clear_on_overwrite(path: str, overwrite: bool) -> None:
-    if os.path.exists(path):
-        if overwrite:
-            shutil.rmtree(path)
-        elif os.listdir(path):
-            error_message = ('Trying to overwrite '
-                             'directory "{path}", '
-                             'but no "--overwrite" flag was set.'
-                             .format(path=path))
-            raise click.BadOptionUsage('overwrite', error_message)
 
 
 def api_method_url(method: str,
