@@ -79,13 +79,9 @@ settings_schema = Map({
               default='settings.yml',
               help='Path (absolute or relative) to settings '
                    '(defaults to "settings.yml").')
-@click.option('--template-dir',
-              default='template',
-              help='Path (absolute or relative) to template project.')
-@click.option('--template-repo',
-              default=None,
-              help='Github repository in format `owner name/repository name` '
-                   'with template.')
+@click.option('--templates-dir',
+              default='.templates',
+              help='Path (absolute or relative) to templates.')
 @click.option('--output-dir', '-o',
               default='.',
               help='Path (absolute or relative) to output directory '
@@ -97,20 +93,21 @@ settings_schema = Map({
               default=None,
               help='Personal access token '
                    'that can be used to access the GitHub API.')
+@click.argument('template-repo')
 def main(version: bool,
          settings_path: str,
-         template_dir: str,
-         template_repo: Optional[str],
+         templates_dir: str,
          output_dir: str,
          overwrite: bool,
-         github_access_token: Optional[str]) -> None:
+         github_access_token: Optional[str],
+         template_repo: str) -> None:
     """Generates project from template."""
     if version:
         sys.stdout.write(__version__)
         return
-    template_dir = os.path.normpath(template_dir)
+    template_dir = os.path.normpath(templates_dir)
     if template_repo is not None:
-        template_dir = os.path.join(template_dir, template_repo)
+        base_template_dir = os.path.join(template_dir, template_repo)
         latest_commit_info, = (requests.get('https://api.github.com/repos/{}'
                                             '/commits?per_page=1'
                                             .format(template_repo)).json())
@@ -119,19 +116,20 @@ def main(version: bool,
         latest_commit_timestamp = calendar.timegm(
                 datetime.strptime(latest_commit_datetime_string,
                                   '%Y-%m-%dT%H:%M:%SZ').utctimetuple())
-        os.makedirs(template_dir,
+        os.makedirs(base_template_dir,
                     exist_ok=True)
-        previous_versions_paths = os.listdir(template_dir)
-        template_dir = os.path.join(template_dir, str(latest_commit_timestamp))
-        if previous_versions_paths:
-            previous_version_path, = previous_versions_paths
-            previous_version_timestamp = int(
-                    os.path.basename(previous_version_path))
-            if previous_version_timestamp < latest_commit_timestamp:
-                shutil.rmtree(previous_version_path)
-                load_github_repository(template_repo, template_dir)
-        else:
+        template_dir = os.path.join(base_template_dir,
+                                    str(latest_commit_timestamp))
+        try:
+            previous_timestamp_string, = os.listdir(base_template_dir)
+        except ValueError:
             load_github_repository(template_repo, template_dir)
+        else:
+            previous_timestamp = int(previous_timestamp_string)
+            if previous_timestamp < latest_commit_timestamp:
+                shutil.rmtree(os.path.join(base_template_dir,
+                                           previous_timestamp_string))
+                load_github_repository(template_repo, template_dir)
     output_dir = os.path.normpath(output_dir)
     os.makedirs(output_dir,
                 exist_ok=True)
