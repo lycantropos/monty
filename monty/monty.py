@@ -32,6 +32,7 @@ from strictyaml import (Map,
 from strictyaml.yamllocation import YAMLChunk
 
 __version__ = '1.1.0-alpha'
+GITHUB_API_ENDPOINT = 'https://api.github.com'
 
 
 class NonEmptySingleLineStr(Str):
@@ -105,46 +106,12 @@ def main(version: bool,
     if version:
         sys.stdout.write(__version__)
         return
-    template_dir = os.path.normpath(templates_dir)
-    if template_repo is not None:
-        base_template_dir = os.path.join(template_dir, template_repo)
-        latest_commit_info, = (requests.get('https://api.github.com/repos/{}'
-                                            '/commits?per_page=1'
-                                            .format(template_repo)).json())
-        latest_commit_datetime_string = (
-            latest_commit_info['commit']['committer']['date'])
-        latest_commit_timestamp = calendar.timegm(
-                datetime.strptime(latest_commit_datetime_string,
-                                  '%Y-%m-%dT%H:%M:%SZ').utctimetuple())
-        os.makedirs(base_template_dir,
-                    exist_ok=True)
-        template_dir = os.path.join(base_template_dir,
-                                    str(latest_commit_timestamp))
-        try:
-            previous_timestamp_string, = os.listdir(base_template_dir)
-        except ValueError:
-            load_github_repository(template_repo, template_dir)
-        else:
-            previous_timestamp = int(previous_timestamp_string)
-            if previous_timestamp < latest_commit_timestamp:
-                shutil.rmtree(os.path.join(base_template_dir,
-                                           previous_timestamp_string))
-                load_github_repository(template_repo, template_dir)
+    templates_dir = os.path.normpath(templates_dir)
+    template_dir = sync_template(templates_dir, template_repo)
     output_dir = os.path.normpath(output_dir)
     os.makedirs(output_dir,
                 exist_ok=True)
-    settings = (load(Path(settings_path).read_text(encoding='utf-8'),
-                     schema=settings_schema)
-                .data)
-    license_classifier = settings['license_classifier']
-    _, settings['license'] = license_classifier.rsplit(' :: ', 1)
-    dockerhub_login = settings['dockerhub_login']
-    github_login = settings['github_login']
-    dockerhub_user = load_dockerhub_user(dockerhub_login)
-    github_user = load_github_user(github_login,
-                                   access_token=github_access_token)
-    settings.setdefault('full_name',
-                        github_user['name'] or dockerhub_user['full_name'])
+    settings = load_settings(settings_path, github_access_token)
     non_binary_files_paths = filterfalse(is_binary_file,
                                          files_paths(template_dir))
     renderer = cast(Callable[[str], str], partial(render,
@@ -161,6 +128,53 @@ def main(version: bool,
                                        .format(path=new_file_path))
         render_file(file_path, new_file_path,
                     renderer=renderer)
+
+
+def sync_template(templates_path: str, repository_path: str) -> str:
+    base_template_dir = os.path.join(templates_path, repository_path)
+    latest_commits_info = (requests.get(GITHUB_API_ENDPOINT
+                                        + '/repos/{}/commits?per_page=1'
+                                        .format(repository_path))
+                           .json())
+    _validate_github_response(latest_commits_info)
+    latest_commit_info, = latest_commits_info
+    latest_commit_datetime_string = (
+        latest_commit_info['commit']['committer']['date'])
+    latest_commit_timestamp = calendar.timegm(
+            datetime.strptime(latest_commit_datetime_string,
+                              '%Y-%m-%dT%H:%M:%SZ').utctimetuple())
+    os.makedirs(base_template_dir,
+                exist_ok=True)
+    template_dir = os.path.join(base_template_dir,
+                                str(latest_commit_timestamp))
+    try:
+        previous_timestamp_string, = os.listdir(base_template_dir)
+    except ValueError:
+        load_github_repository(repository_path, template_dir)
+    else:
+        previous_timestamp = int(previous_timestamp_string)
+        if previous_timestamp < latest_commit_timestamp:
+            shutil.rmtree(os.path.join(base_template_dir,
+                                       previous_timestamp_string))
+            load_github_repository(repository_path, template_dir)
+    return template_dir
+
+
+def load_settings(settings_path: str,
+                  github_access_token: Optional[str]) -> Dict[str, str]:
+    settings = (load(Path(settings_path).read_text(encoding='utf-8'),
+                     schema=settings_schema)
+                .data)
+    license_classifier = settings['license_classifier']
+    _, settings['license'] = license_classifier.rsplit(' :: ', 1)
+    dockerhub_login = settings['dockerhub_login']
+    github_login = settings['github_login']
+    dockerhub_user = load_dockerhub_user(dockerhub_login)
+    github_user = load_github_user(github_login,
+                                   access_token=github_access_token)
+    settings.setdefault('full_name',
+                        github_user['name'] or dockerhub_user['full_name'])
+    return settings
 
 
 def api_method_url(method: str,
@@ -227,7 +241,7 @@ def load_github_repository(name: str, destination_path: str) -> None:
 
 def load_github_user(login: str,
                      *,
-                     base_url='https://api.github.com',
+                     base_url: str = GITHUB_API_ENDPOINT,
                      access_token: Optional[str] = None) -> Dict[str, Any]:
     users_method_url = partial(api_method_url,
                                'users')
@@ -240,12 +254,13 @@ def load_github_user(login: str,
                          users_method_url=users_method_url,
                          headers=headers)
     user = response.json()
-    try:
-        error_message = user['message']
-    except KeyError:
-        return user
-    else:
-        raise ValueError(error_message)
+    _validate_github_response(user)
+    return user
+
+
+def _validate_github_response(response: Any) -> None:
+    if isinstance(response, dict) and 'message' in response:
+        raise ValueError(response['message'])
 
 
 def load_licenses_classifiers(*,
