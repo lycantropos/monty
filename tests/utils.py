@@ -6,4 +6,4 @@ class Secured:
         self.value = value
 
     def __repr__(self) -> str:
-        return '...'
+        return '...' if self.value is not None else repr(self.value)
