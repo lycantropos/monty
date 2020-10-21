@@ -31,7 +31,7 @@ from strictyaml import (Map,
                         load)
 from strictyaml.yamllocation import YAMLChunk
 
-__version__ = '1.1.0-alpha'
+__version__ = '1.1.0'
 GITHUB_API_ENDPOINT = 'https://api.github.com'
 
 
