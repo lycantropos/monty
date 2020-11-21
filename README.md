@@ -1,7 +1,6 @@
 monty
 =====
 
-[![](https://travis-ci.org/lycantropos/monty.svg?branch=master)](https://travis-ci.org/lycantropos/monty "Travis CI")
 [![](https://dev.azure.com/lycantropos/monty/_apis/build/status/lycantropos.monty?branchName=master)](https://dev.azure.com/lycantropos/monty/_build/latest?definitionId=2&branchName=master "Azure Pipelines")
 [![](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
 [![](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
