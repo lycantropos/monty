@@ -7,4 +7,4 @@ license_classifier: "License :: OSI Approved :: MIT License"
 project: monty
 version: 0.0.0
 min_python_version: 3.5
-max_python_version: 3.8
+max_python_version: 3.9
