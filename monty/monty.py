@@ -107,7 +107,8 @@ def main(version: bool,
         sys.stdout.write(__version__)
         return
     templates_dir = os.path.normpath(templates_dir)
-    template_dir = sync_template(templates_dir, template_repo)
+    template_dir = sync_template(templates_dir, template_repo,
+                                 github_access_token)
     output_dir = os.path.normpath(output_dir)
     os.makedirs(output_dir,
                 exist_ok=True)
@@ -130,12 +131,13 @@ def main(version: bool,
                     renderer=renderer)
 
 
-def sync_template(templates_path: str, repository_path: str) -> str:
+def sync_template(templates_path: str, repository_path: str,
+                  github_access_token: Optional[str]) -> str:
     base_template_dir = os.path.join(templates_path, repository_path)
-    latest_commits_info = (requests.get(GITHUB_API_ENDPOINT
-                                        + '/repos/{}/commits?per_page=1'
-                                        .format(repository_path))
-                           .json())
+    latest_commits_info = requests.get(
+            GITHUB_API_ENDPOINT
+            + '/repos/{}/commits?per_page=1'.format(repository_path),
+            headers=_to_github_headers(github_access_token)).json()
     _validate_github_response(latest_commits_info)
     latest_commit_info, = latest_commits_info
     latest_commit_datetime_string = (
@@ -245,17 +247,21 @@ def load_github_user(login: str,
                      access_token: Optional[str] = None) -> Dict[str, Any]:
     users_method_url = partial(api_method_url,
                                'users')
-    headers = (None
-               if access_token is None
-               else {'Authorization': 'token {}'.format(access_token)})
     response = load_user(login=login,
                          base_url=base_url,
                          version='',
                          users_method_url=users_method_url,
-                         headers=headers)
+                         headers=_to_github_headers(access_token))
     user = response.json()
     _validate_github_response(user)
     return user
+
+
+def _to_github_headers(access_token: Optional[str]
+                       ) -> Optional[Dict[str, str]]:
+    return (None
+            if access_token is None
+            else {'Authorization': 'token {}'.format(access_token)})
 
 
 def _validate_github_response(response: Any) -> None:
