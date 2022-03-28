@@ -1,4 +1,3 @@
-azure_login: lycantropos
 description: "Python project generator."
 dockerhub_login: lycantropos
 email: azatibrakov@gmail.com

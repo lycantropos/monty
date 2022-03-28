@@ -59,7 +59,6 @@ class LicenseClassifier(Str):
 
 version_pattern = r'\d+\.\d+(\.\d+)?(-(alpha|beta))?'
 settings_schema = Map({
-    'azure_login': Str(),
     'description': NonEmptySingleLineStr(),
     'dockerhub_login': Str(),
     'email': Str(),
