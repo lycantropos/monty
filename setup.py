@@ -5,7 +5,7 @@ from setuptools import setup
 project_base_url = 'https://github.com/lycantropos/monty/'
 
 setup(name='montemplate',
-      version='1.1.0',
+      version='2.0.0-alpha',
       description='Python project generator.',
       long_description=Path('README.md').read_text(encoding='utf-8'),
       long_description_content_type='text/markdown',
