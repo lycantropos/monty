@@ -37,7 +37,9 @@ GITHUB_API_ENDPOINT = 'https://api.github.com'
 
 class NonEmptySingleLineStr(Str):
     def validate_scalar(self, chunk: YAMLChunk) -> str:
-        contents = chunk.contents
+        contents = (chunk.contents
+                    if isinstance(chunk.contents, str)
+                    else chunk.contents.value)
         if not contents:
             chunk.expecting_but_found('when expecting non-empty string',
                                       contents)
