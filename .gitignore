@@ -38,3 +38,6 @@ venv/
 
 ### MacOS
 .DS_Store
+
+### monty
+.templates/
