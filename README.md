@@ -1,41 +1,28 @@
 monty
 =====
 
-[![](https://dev.azure.com/lycantropos/monty/_apis/build/status/lycantropos.monty?branchName=master)](https://dev.azure.com/lycantropos/monty/_build/latest?definitionId=2&branchName=master "Azure Pipelines")
+[![](https://github.com/lycantropos/monty/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/lycantropos/monty/actions/workflows/ci.yml "Github Actions")
 [![](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
 [![](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/montemplate.svg)](https://badge.fury.io/py/montemplate "PyPI")
 
-In what follows
-- `python` is an alias for `python3.5` or any later
-version (`python3.6` and so on),
-- `pypy` is an alias for `pypy3.5` or any later
-version (`pypy3.6` and so on).
+In what follows `python` is an alias for `python3.6` or `pypy3.6`
+or any later version (`python3.7`, `pypy3.7` and so on).
 
 Installation
 ------------
 
-Install the latest `pip` & `setuptools` packages versions:
-- with `CPython`
-  ```bash
-  python -m pip install --upgrade pip setuptools
-  ```
-- with `PyPy`
-  ```bash
-  pypy -m pip install --upgrade pip setuptools
-  ```
+Install the latest `pip` & `setuptools` packages versions
+```bash
+python -m pip install --upgrade pip setuptools
+```
 
 ### User
 
-Download and install the latest stable version from `PyPI` repository:
-- with `CPython`
-  ```bash
-  python -m pip install --upgrade monty
-  ```
-- with `PyPy`
-  ```bash
-  pypy -m pip install --upgrade monty
-  ```
+Download and install the latest stable version from `PyPI` repository
+```bash
+python -m pip install --upgrade monty
+```
 
 ### Developer
 
@@ -45,28 +32,19 @@ git clone https://github.com/lycantropos/monty.git
 cd monty
 ```
 
-Install dependencies:
-- with `CPython`
-  ```bash
-  python -m pip install --force-reinstall -r requirements.txt
-  ```
-- with `PyPy`
-  ```bash
-  pypy -m pip install --force-reinstall -r requirements.txt
-  ```
+Install dependencies
+```bash
+python -m pip install -r requirements.txt
+```
 
-Install:
-- with `CPython`
-  ```bash
-  python setup.py install
-  ```
-- with `PyPy`
-  ```bash
-  pypy setup.py install
-  ```
+Install
+```bash
+python setup.py install
+```
 
 Usage
 -----
+
 After updating `setting.yml` with related information
 ```bash
 monty -o output lycantropos/monty-cpython-pypy-template
@@ -122,15 +100,10 @@ This will set version to `major.minor.patch`.
 
 ### Running tests
 
-Install dependencies:
-- with `CPython`
-  ```bash
-  python -m pip install --force-reinstall -r requirements-tests.txt
-  ```
-- with `PyPy`
-  ```bash
-  pypy -m pip install --force-reinstall -r requirements-tests.txt
-  ```
+Install dependencies
+```bash
+python -m pip install -r requirements-tests.txt
+```
 
 Plain
 ```bash
@@ -147,7 +120,7 @@ Inside `Docker` container:
   docker-compose --file docker-compose.pypy.yml up
   ```
 
-`Bash` script (e.g. can be used in `Git` hooks):
+`Bash` script:
 - with `CPython`
   ```bash
   ./run-tests.sh
@@ -162,7 +135,7 @@ Inside `Docker` container:
   ./run-tests.sh pypy
   ```
 
-`PowerShell` script (e.g. can be used in `Git` hooks):
+`PowerShell` script:
 - with `CPython`
   ```powershell
   .\run-tests.ps1
