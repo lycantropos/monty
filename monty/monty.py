@@ -90,6 +90,7 @@ settings_schema = Map({
               is_flag=True,
               help='Overwrites files if output directory exists.')
 @click.option('--github-access-token', '-g',
+              envvar='GITHUB_ACCESS_TOKEN',
               default=None,
               help='Personal access token '
                    'that can be used to access the GitHub API.')
