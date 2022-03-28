@@ -24,6 +24,6 @@ setup(name='montemplate',
       license='MIT License',
       url=project_base_url,
       download_url=project_base_url + 'archive/master.zip',
-      python_requires='>=3.5',
+      python_requires='>=3.6',
       install_requires=Path('requirements.txt').read_text(encoding='utf-8'),
       entry_points={'console_scripts': ['monty = monty.monty:main']})
