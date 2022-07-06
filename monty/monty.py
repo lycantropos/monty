@@ -63,9 +63,9 @@ class LicenseClassifier(Str):
 version_pattern = r'\d+\.\d+(\.\d+)?(-(alpha|beta))?'
 settings_schema = Map({
     'description': NonEmptySingleLineStr(),
-    'dockerhub_login': Str(),
-    'email': Str(),
-    'github_login': Str(),
+    'dockerhub_login': NonEmptySingleLineStr(),
+    'email': NonEmptySingleLineStr(),
+    'github_login': NonEmptySingleLineStr(),
     'license_classifier': LicenseClassifier(),
     'project': Regex(r'\w+([\.-]\w+)*'),
     'version': Regex(version_pattern),
