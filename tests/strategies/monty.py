@@ -23,8 +23,11 @@ descriptions = (
                      min_size=1)
      .filter(is_utf_8_string))
 )
-licenses_classifiers = strategies.sampled_from(
-        monty.load_licenses_classifiers()
+trove_licenses_classifiers = strategies.sampled_from(
+        monty.load_trove_licenses_classifiers()
+)
+spdx_licenses_identifiers = strategies.sampled_from(
+        list(monty.load_spdx_licenses_info())
 )
 projects_names_delimiters = '.-_'
 projects_names_alphabet = strategies.sampled_from(ascii_alphanumeric
@@ -45,21 +48,28 @@ versions_parts = strategies.integers(0, 100)
 versions = (strategies.tuples(versions_parts, versions_parts, versions_parts)
             .map(partial(map, str))
             .map('.'.join))
-settings = strategies.fixed_dictionaries({
+optional_settings = {
+    monty.TROVE_LICENSE_CLASSIFIER_KEY: trove_licenses_classifiers,
+    'min_python_version': versions,
+    'max_python_version': versions,
+}
+required_settings = {
     'description': descriptions,
     'dockerhub_login': dockerhub_logins,
     'email': strategies.emails(),
     'github_login': github_logins,
-    'license_classifier': licenses_classifiers,
+    'spdx_licenses_identifier': spdx_licenses_identifiers,
     'project': projects_names,
     'version': versions,
-    'min_python_version': versions,
-    'max_python_version': versions,
-})
+}
+settings = strategies.fixed_dictionaries({**required_settings,
+                                          **optional_settings})
 templates_directories_paths = strategies.builds(tempfile.mkdtemp)
 template_repositories_names = strategies.sampled_from(
         ['lycantropos/monty-cpp-bind-port-template',
          'lycantropos/monty-cpython-pypy-template',
-         'lycantropos/monty-python-c-api-template']
+         'lycantropos/monty-python-c-api-template',
+         'lycantropos/monty-rust-python-template',
+         'lycantropos/monty-rust-template']
 )
 temporary_directories = strategies.builds(tempfile.TemporaryDirectory)
