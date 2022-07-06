@@ -58,7 +58,7 @@ required_settings = {
     'dockerhub_login': dockerhub_logins,
     'email': strategies.emails(),
     'github_login': github_logins,
-    'spdx_licenses_identifier': spdx_licenses_identifiers,
+    'spdx_license_identifier': spdx_licenses_identifiers,
     'project': projects_names,
     'version': versions,
 }
