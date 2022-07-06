@@ -26,6 +26,7 @@ import click
 import requests
 from jinja2 import Template
 from strictyaml import (Map,
+                        Optional as OptionalKey,
                         Regex,
                         Str,
                         load)
@@ -68,8 +69,8 @@ settings_schema = Map({
     'license_classifier': LicenseClassifier(),
     'project': Regex(r'\w+([\.-]\w+)*'),
     'version': Regex(version_pattern),
-    'min_python_version': Regex(version_pattern),
-    'max_python_version': Regex(version_pattern),
+    OptionalKey('min_python_version'): Regex(version_pattern),
+    OptionalKey('max_python_version'): Regex(version_pattern),
 })
 
 
