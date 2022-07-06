@@ -6,6 +6,7 @@ import os
 import posixpath
 import shutil
 import sys
+import warnings
 from datetime import datetime
 from functools import partial
 from itertools import (filterfalse,
@@ -13,6 +14,7 @@ from itertools import (filterfalse,
 from pathlib import Path
 from typing import (Any,
                     Callable,
+                    Container,
                     Dict,
                     Iterable,
                     Iterator,
@@ -34,6 +36,9 @@ from strictyaml.yamllocation import YAMLChunk
 
 __version__ = '2.0.0'
 GITHUB_API_ENDPOINT = 'https://api.github.com'
+TROVE_LICENSE_CLASSIFIER_KEY = 'trove_license_classifier'
+TROVE_CLASSIFIER_SEPARATOR = ' :: '
+VERSION_PATTERN = r'\d+\.\d+(\.\d+)?(-(alpha|beta))?'
 
 
 class NonEmptySingleLineStr(Str):
@@ -50,28 +55,29 @@ class NonEmptySingleLineStr(Str):
         return contents
 
 
-class LicenseClassifier(Str):
-    def validate_scalar(self, chunk: YAMLChunk) -> str:
+class SpdxLicenseIdentifier(Str):
+    def __init__(self, identifiers: Container[str]) -> None:
+        self.identifiers = identifiers
+
+    def validate_scalar(self, chunk: YAMLChunk) -> Dict[str, Any]:
         contents = chunk.contents
-        if contents not in load_licenses_classifiers():
-            chunk.expecting_but_found('when expecting '
-                                      'license Trove classifier',
+        if contents not in self.identifiers:
+            chunk.expecting_but_found('when expecting SPDX license identifier',
                                       contents)
         return contents
 
 
-version_pattern = r'\d+\.\d+(\.\d+)?(-(alpha|beta))?'
-settings_schema = Map({
-    'description': NonEmptySingleLineStr(),
-    'dockerhub_login': NonEmptySingleLineStr(),
-    'email': NonEmptySingleLineStr(),
-    'github_login': NonEmptySingleLineStr(),
-    'license_classifier': LicenseClassifier(),
-    'project': Regex(r'\w+([\.-]\w+)*'),
-    'version': Regex(version_pattern),
-    OptionalKey('min_python_version'): Regex(version_pattern),
-    OptionalKey('max_python_version'): Regex(version_pattern),
-})
+class TroveLicenseClassifier(Str):
+    def __init__(self, identifiers: Container[str]) -> None:
+        self.classifiers = identifiers
+
+    def validate_scalar(self, chunk: YAMLChunk) -> str:
+        contents = chunk.contents
+        if contents not in self.classifiers:
+            chunk.expecting_but_found('when expecting '
+                                      'license Trove classifier',
+                                      contents)
+        return contents
 
 
 @click.command()
@@ -167,11 +173,71 @@ def sync_template(templates_path: str, repository_path: str,
 
 def load_settings(settings_path: str,
                   github_access_token: Optional[str]) -> Dict[str, str]:
+    spdx_licenses_info = load_spdx_licenses_info()
+    trove_licenses_classifiers = load_trove_licenses_classifiers()
+    settings_schema = Map({
+        'description': NonEmptySingleLineStr(),
+        'dockerhub_login': NonEmptySingleLineStr(),
+        'email': NonEmptySingleLineStr(),
+        'github_login': NonEmptySingleLineStr(),
+        OptionalKey('max_python_version'): Regex(VERSION_PATTERN),
+        OptionalKey('min_python_version'): Regex(VERSION_PATTERN),
+        'project': Regex(r'\w+([\.-]\w+)*'),
+        'spdx_license_identifier': SpdxLicenseIdentifier(
+                spdx_licenses_info.keys()
+        ),
+        OptionalKey(TROVE_LICENSE_CLASSIFIER_KEY): TroveLicenseClassifier(
+                trove_licenses_classifiers
+        ),
+        'version': Regex(VERSION_PATTERN),
+    })
     settings = (load(Path(settings_path).read_text(encoding='utf-8'),
                      schema=settings_schema)
                 .data)
-    license_classifier = settings['license_classifier']
-    _, settings['license'] = license_classifier.rsplit(' :: ', 1)
+    spdx_license_info = spdx_licenses_info[settings['spdx_license_identifier']]
+    license_name = spdx_license_info['name']
+    if spdx_license_info['is_deprecated']:
+        warnings.warn('License "{name}" is marked as deprecated by SPDX.'
+                      .format(name=license_name),
+                      DeprecationWarning)
+    settings['license'] = license_name
+    if TROVE_LICENSE_CLASSIFIER_KEY not in settings:
+        osi_approved = spdx_license_info['osi_approved']
+        candidates = [classifier
+                      for classifier in trove_licenses_classifiers
+                      if ((license_name
+                           in classifier.rsplit(TROVE_CLASSIFIER_SEPARATOR,
+                                                maxsplit=1)[1])
+                          and (('OSI Approved'
+                                == classifier.split(TROVE_CLASSIFIER_SEPARATOR,
+                                                    maxsplit=2)[1])
+                               if osi_approved
+                               else
+                               ('OSI Approved'
+                                != classifier.split(TROVE_CLASSIFIER_SEPARATOR,
+                                                    maxsplit=2)[1])))]
+        try:
+            trove_license_classifier, = candidates
+        except ValueError:
+            if not candidates:
+                warnings.warn('No Trove classifier found '
+                              'for license "{name}", '
+                              'in case of need specify it explicitly '
+                              'with "{key}" key in settings.'
+                              .format(name=license_name,
+                                      key=TROVE_LICENSE_CLASSIFIER_KEY),
+                              UserWarning)
+            else:
+                warnings.warn('Found {count} conflicting Trove classifiers '
+                              'for license "{name}", '
+                              'in case of need specify it explicitly '
+                              'with "{key}" key in settings.'
+                              .format(count=len(candidates),
+                                      name=license_name,
+                                      key=TROVE_LICENSE_CLASSIFIER_KEY),
+                              UserWarning)
+        else:
+            settings[TROVE_LICENSE_CLASSIFIER_KEY] = trove_license_classifier
     dockerhub_login = settings['dockerhub_login']
     github_login = settings['github_login']
     dockerhub_user = load_dockerhub_user(dockerhub_login)
@@ -260,6 +326,40 @@ def load_github_user(login: str,
     return user
 
 
+def load_spdx_licenses_info(json_url: str = 'https://raw.githubusercontent.com'
+                                            '/spdx/license-list-data/master'
+                                            '/json/licenses.json'
+                            ) -> Dict[str, Any]:
+    response = requests.get(json_url)
+    response.raise_for_status()
+    raw_licenses = response.json()['licenses']
+    result = {
+        raw_license['licenseId']: {
+            'name': raw_license['name'],
+            'is_deprecated': raw_license['isDeprecatedLicenseId'],
+            'osi_approved': raw_license['isOsiApproved'],
+        }
+        for raw_license in raw_licenses
+    }
+    assert len(result) == len(raw_licenses), (
+        'License identifiers should be unique'
+    )
+    return result
+
+
+def load_trove_licenses_classifiers(
+        *,
+        url: str = 'https://pypi.org/pypi?%3Aaction=list_classifiers',
+) -> List[str]:
+    with requests.get(url,
+                      stream=True) as response:
+        return [line
+                for line in response.iter_lines(decode_unicode=True)
+                if (line.split(TROVE_CLASSIFIER_SEPARATOR,
+                               maxsplit=1)[0]
+                    == 'License')]
+
+
 def _to_github_headers(access_token: Optional[str]
                        ) -> Optional[Dict[str, str]]:
     return (None
@@ -270,18 +370,6 @@ def _to_github_headers(access_token: Optional[str]
 def _validate_github_response(response: Any) -> None:
     if isinstance(response, dict) and 'message' in response:
         raise ValueError(response['message'])
-
-
-def load_licenses_classifiers(*,
-                              url: str = 'https://pypi.org/pypi?%3A'
-                                         'action=list_classifiers',
-                              license_classifier_prefix: str = 'License :: '
-                              ) -> List[str]:
-    with requests.get(url,
-                      stream=True) as response:
-        return [line
-                for line in response.iter_lines(decode_unicode=True)
-                if line.startswith(license_classifier_prefix)]
 
 
 def load_user(login: str,
