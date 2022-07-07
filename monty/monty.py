@@ -328,7 +328,6 @@ def load_github_user(login: str,
                          version='',
                          users_method_url=users_method_url,
                          headers=_to_github_headers(access_token))
-    response.raise_for_status()
     user = response.json()
     _validate_github_response(user)
     return user
