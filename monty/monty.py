@@ -197,17 +197,17 @@ def load_settings(settings_path: str,
                      schema=settings_schema)
                 .data)
     spdx_license_info = spdx_licenses_info[settings['spdx_license_identifier']]
-    license_name = spdx_license_info['name']
+    spdx_license_name = spdx_license_info['name']
     if spdx_license_info['is_deprecated']:
         warnings.warn('License "{name}" is marked as deprecated by SPDX.'
-                      .format(name=license_name),
+                      .format(name=spdx_license_name),
                       DeprecationWarning)
-    settings['license'] = license_name
+    settings['spdx_license_name'] = spdx_license_name
     if TROVE_LICENSE_CLASSIFIER_KEY not in settings:
         osi_approved = spdx_license_info['osi_approved']
         candidates = [classifier
                       for classifier in trove_licenses_classifiers
-                      if ((license_name
+                      if ((spdx_license_name
                            in classifier.rsplit(TROVE_CLASSIFIER_SEPARATOR,
                                                 maxsplit=1)[1])
                           and (('OSI Approved'
@@ -226,7 +226,7 @@ def load_settings(settings_path: str,
                               'for license "{name}", '
                               'in case of need specify it explicitly '
                               'with "{key}" key in settings.'
-                              .format(name=license_name,
+                              .format(name=spdx_license_name,
                                       key=TROVE_LICENSE_CLASSIFIER_KEY),
                               UserWarning)
             else:
@@ -235,7 +235,7 @@ def load_settings(settings_path: str,
                               'in case of need specify it explicitly '
                               'with "{key}" key in settings.'
                               .format(count=len(candidates),
-                                      name=license_name,
+                                      name=spdx_license_name,
                                       key=TROVE_LICENSE_CLASSIFIER_KEY),
                               UserWarning)
         else:
