@@ -37,6 +37,7 @@ from strictyaml import (Map,
 from strictyaml.yamllocation import YAMLChunk
 
 __version__ = '3.0.0-alpha'
+FULL_NAME_KEY = 'full_name'
 GITHUB_API_ENDPOINT = 'https://api.github.com'
 TROVE_LICENSE_CLASSIFIER_KEY = 'trove_license_classifier'
 TROVE_CLASSIFIER_SEPARATOR = ' :: '
@@ -187,7 +188,7 @@ def load_settings(settings_path: str,
                 spdx_licenses_info.keys()
         ),
         'version': Regex(VERSION_PATTERN),
-        OptionalKey('full_name'): NonEmptySingleLineStr(),
+        OptionalKey(FULL_NAME_KEY): NonEmptySingleLineStr(),
         OptionalKey('max_version_of'): MapPattern(NonEmptySingleLineStr(),
                                                   Regex(VERSION_PATTERN)),
         OptionalKey('min_version_of'): MapPattern(NonEmptySingleLineStr(),
@@ -245,11 +246,12 @@ def load_settings(settings_path: str,
             settings[TROVE_LICENSE_CLASSIFIER_KEY] = trove_license_classifier
     dockerhub_login = settings['dockerhub_login']
     github_login = settings['github_login']
-    dockerhub_user = load_dockerhub_user(dockerhub_login)
-    github_user = load_github_user(github_login,
-                                   access_token=github_access_token)
-    settings.setdefault('full_name',
-                        github_user['name'] or dockerhub_user['full_name'])
+    if FULL_NAME_KEY not in settings:
+        settings[FULL_NAME_KEY] = (
+                load_github_user(github_login,
+                                 access_token=github_access_token)['name']
+                or load_dockerhub_user(dockerhub_login)['full_name']
+        )
     return settings
 
 
