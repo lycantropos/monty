@@ -7,7 +7,7 @@ services:
       args:
         - IMAGE_NAME=${CPYTHON_IMAGE_NAME}
         - IMAGE_VERSION=${CPYTHON_IMAGE_VERSION}
-    image: lycantropos/monty-cpython:2.0.0
+    image: lycantropos/monty-cpython:3.0.0-alpha
     volumes:
       - ./monty:/opt/monty/monty
       - ./pytest.ini:/opt/monty/pytest.ini

@@ -34,7 +34,7 @@ from strictyaml import (Map,
                         load)
 from strictyaml.yamllocation import YAMLChunk
 
-__version__ = '2.0.0'
+__version__ = '3.0.0-alpha'
 GITHUB_API_ENDPOINT = 'https://api.github.com'
 TROVE_LICENSE_CLASSIFIER_KEY = 'trove_license_classifier'
 TROVE_CLASSIFIER_SEPARATOR = ' :: '
