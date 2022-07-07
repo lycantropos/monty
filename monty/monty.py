@@ -28,7 +28,8 @@ import click
 import requests
 from jinja2 import Template
 from strictyaml import (Map,
-                        MapPattern, Optional as OptionalKey,
+                        MapPattern,
+                        Optional as OptionalKey,
                         Regex,
                         Str,
                         load)
