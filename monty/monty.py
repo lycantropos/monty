@@ -28,7 +28,7 @@ import click
 import requests
 from jinja2 import Template
 from strictyaml import (Map,
-                        Optional as OptionalKey,
+                        MapPattern, Optional as OptionalKey,
                         Regex,
                         Str,
                         load)
@@ -180,8 +180,10 @@ def load_settings(settings_path: str,
         'dockerhub_login': NonEmptySingleLineStr(),
         'email': NonEmptySingleLineStr(),
         'github_login': NonEmptySingleLineStr(),
-        OptionalKey('max_python_version'): Regex(VERSION_PATTERN),
-        OptionalKey('min_python_version'): Regex(VERSION_PATTERN),
+        OptionalKey('max_version_of'): MapPattern(NonEmptySingleLineStr(),
+                                                  Regex(VERSION_PATTERN)),
+        OptionalKey('min_version_of'): MapPattern(NonEmptySingleLineStr(),
+                                                  Regex(VERSION_PATTERN)),
         'project': Regex(r'\w+([\.-]\w+)*'),
         'spdx_license_identifier': SpdxLicenseIdentifier(
                 spdx_licenses_info.keys()
