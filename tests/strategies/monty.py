@@ -48,10 +48,12 @@ versions_parts = strategies.integers(0, 100)
 versions = (strategies.tuples(versions_parts, versions_parts, versions_parts)
             .map(partial(map, str))
             .map('.'.join))
+dependencies_versions = strategies.fixed_dictionaries({'python': versions,
+                                                       'rust': versions})
 optional_settings = {
     monty.TROVE_LICENSE_CLASSIFIER_KEY: trove_licenses_classifiers,
-    'min_python_version': versions,
-    'max_python_version': versions,
+    'min_version_of': dependencies_versions,
+    'max_version_of': dependencies_versions,
 }
 required_settings = {
     'description': descriptions,
