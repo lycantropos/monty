@@ -26,7 +26,8 @@ from zipfile import ZipFile
 
 import click
 import requests
-from jinja2 import Template
+from jinja2 import (StrictUndefined,
+                    Template)
 from strictyaml import (Map,
                         MapPattern,
                         Optional as OptionalKey,
@@ -394,9 +395,11 @@ def load_user(login: str,
 
 
 def render(source: str, settings: Dict[str, str]) -> str:
-    return Template(source,
-                    keep_trailing_newline=True,
-                    trim_blocks=True).render(**settings)
+    return (Template(source,
+                     keep_trailing_newline=True,
+                     trim_blocks=True,
+                     undefined=StrictUndefined)
+            .render(**settings))
 
 
 def render_file(source_path: str,
