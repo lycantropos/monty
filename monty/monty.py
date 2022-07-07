@@ -180,18 +180,19 @@ def load_settings(settings_path: str,
         'dockerhub_login': NonEmptySingleLineStr(),
         'email': NonEmptySingleLineStr(),
         'github_login': NonEmptySingleLineStr(),
-        OptionalKey('max_version_of'): MapPattern(NonEmptySingleLineStr(),
-                                                  Regex(VERSION_PATTERN)),
-        OptionalKey('min_version_of'): MapPattern(NonEmptySingleLineStr(),
-                                                  Regex(VERSION_PATTERN)),
         'project': Regex(r'\w+([\.-]\w+)*'),
         'spdx_license_identifier': SpdxLicenseIdentifier(
                 spdx_licenses_info.keys()
         ),
+        'version': Regex(VERSION_PATTERN),
+        OptionalKey('full_name'): NonEmptySingleLineStr(),
+        OptionalKey('max_version_of'): MapPattern(NonEmptySingleLineStr(),
+                                                  Regex(VERSION_PATTERN)),
+        OptionalKey('min_version_of'): MapPattern(NonEmptySingleLineStr(),
+                                                  Regex(VERSION_PATTERN)),
         OptionalKey(TROVE_LICENSE_CLASSIFIER_KEY): TroveLicenseClassifier(
                 trove_licenses_classifiers
         ),
-        'version': Regex(VERSION_PATTERN),
     })
     settings = (load(Path(settings_path).read_text(encoding='utf-8'),
                      schema=settings_schema)
