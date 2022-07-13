@@ -68,7 +68,7 @@ settings = strategies.fixed_dictionaries({**required_settings,
                                           **optional_settings})
 templates_directories_paths = strategies.builds(tempfile.mkdtemp)
 template_repositories_names = strategies.sampled_from(
-        ['lycantropos/ monty-cpp-python-template',
+        ['lycantropos/monty-cpp-python-template',
          'lycantropos/monty-cpython-pypy-template',
          'lycantropos/monty-python-c-api-template',
          'lycantropos/monty-rust-python-template',
