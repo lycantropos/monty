@@ -24,6 +24,18 @@ jobs:
         run: python -m pip install -U pre-commit
       - name: 'Run pre-commit'
         run: pre-commit run --all-files
+      - name: 'Install Python package in editable mode'
+        run: python -m pip -v install -e '.'
+      - name: 'Check Python metadata'
+        run: |
+          PROJECT_DESCRIPTION=$(python -c "import importlib.metadata;print(importlib.metadata.metadata('${REPOSITORY_NAME//-/_}')['summary'])")
+          MODULE_DOCSTRING=$(python -c "import ${REPOSITORY_NAME//-/_} as module; assert module.__doc__ is not None; print(module.__doc__)")
+          if [[ $PROJECT_DESCRIPTION != "$MODULE_DOCSTRING" ]]; then
+            echo "Python project description should be equal to module docstring, but found \"$PROJECT_DESCRIPTION\" != \"$MODULE_DOCSTRING\".";
+            exit 1;
+          fi
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
 
   test:
     name: 'Test'
