@@ -61,7 +61,8 @@ post_commit_hooks = []
 files = [
     { "filename" = "docker-compose.cpython.yml" },
     { "filename" = "docker-compose.pypy.yml" },
-    { "filename" = "monty/__init__.py" },
+    { "filename" = "monty/monty.py" },
+    { "filename" = "settings.yml" },
 ]
 
 [tool.coverage.run]
