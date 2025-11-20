@@ -41,6 +41,21 @@ Install
 python -m pip install -e '.'
 ```
 
+Usage
+-----
+
+After updating `setting.yml` with related information
+
+```bash
+monty -o output lycantropos/monty-cpython-pypy-template
+```
+
+All available options can be obtained with
+
+```bash
+monty --help
+```
+
 Development
 -----------
 
