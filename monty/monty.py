@@ -169,10 +169,12 @@ def sync_template(
     templates_path: str, repository_path: str, github_access_token: str | None
 ) -> str:
     base_template_dir = os.path.join(templates_path, repository_path)
-    latest_commits_info = requests.get(
+    latest_commit_info_response = requests.get(
         GITHUB_API_ENDPOINT + f'/repos/{repository_path}/commits?per_page=1',
         headers=_to_github_headers(github_access_token),
-    ).json()
+    )
+    latest_commit_info_response.raise_for_status()
+    latest_commits_info = latest_commit_info_response.json()
     (latest_commit_info,) = latest_commits_info
     latest_commit_datetime_string = latest_commit_info['commit']['committer'][
         'date'
