@@ -173,7 +173,6 @@ def sync_template(
         GITHUB_API_ENDPOINT + f'/repos/{repository_path}/commits?per_page=1',
         headers=_to_github_headers(github_access_token),
     ).json()
-    _validate_github_response(latest_commits_info)
     (latest_commit_info,) = latest_commits_info
     latest_commit_datetime_string = latest_commit_info['commit']['committer'][
         'date'
@@ -338,7 +337,7 @@ def load_dockerhub_user(
     version: str = 'v2',
 ) -> dict[str, Any]:
     users_method_url = partial(api_method_url, 'users')
-    response = load_user(
+    response = fetch_user_request(
         login=login,
         base_url=base_url,
         version=version,
@@ -380,7 +379,7 @@ def load_github_user(
     access_token: str | None = None,
 ) -> dict[str, Any]:
     users_method_url = partial(api_method_url, 'users')
-    response = load_user(
+    response = fetch_user_request(
         login=login,
         base_url=base_url,
         version='',
@@ -388,7 +387,6 @@ def load_github_user(
         headers=_to_github_headers(access_token),
     )
     user = response.json()
-    _validate_github_response(user)
     assert isinstance(user, dict), user
     return user
 
@@ -437,12 +435,7 @@ def _to_github_headers(access_token: str | None) -> dict[str, str] | None:
     )
 
 
-def _validate_github_response(response: Any) -> None:
-    if isinstance(response, dict) and 'message' in response:
-        raise ValueError(response['message'])
-
-
-def load_user(
+def fetch_user_request(
     login: str,
     *,
     base_url: str,
@@ -456,19 +449,18 @@ def load_user(
     if headers is not None:
         session.headers.update(headers)
     with session as session:
-        return session.get(user_url)
+        response = session.get(user_url)
+        response.raise_for_status()
+    return response
 
 
 def render(source: str, settings: dict[str, str]) -> str:
-    try:
-        return Template(
-            source,
-            keep_trailing_newline=True,
-            trim_blocks=True,
-            undefined=StrictUndefined,
-        ).render(**settings)
-    except Exception as e:
-        raise e
+    return Template(
+        source,
+        keep_trailing_newline=True,
+        trim_blocks=True,
+        undefined=StrictUndefined,
+    ).render(**settings)
 
 
 def render_file(

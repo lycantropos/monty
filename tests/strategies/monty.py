@@ -1,12 +1,11 @@
 import tempfile
-from functools import partial
 
 from hypothesis import strategies
 
 from monty import monty
+
 from .common import ascii_alphanumeric
-from .services import (dockerhub_logins,
-                       github_logins)
+from .services import dockerhub_logins, github_logins
 
 
 def is_utf_8_string(string: str) -> bool:
@@ -18,38 +17,38 @@ def is_utf_8_string(string: str) -> bool:
         return True
 
 
-descriptions = (
-    (strategies.text(strategies.characters(blacklist_categories=('Cs', 'Cc')),
-                     min_size=1)
-     .filter(is_utf_8_string))
-)
+descriptions = strategies.text(
+    strategies.characters(blacklist_categories=('Cs', 'Cc')), min_size=1
+).filter(is_utf_8_string)
 trove_licenses_classifiers = strategies.sampled_from(
-        monty.load_trove_licenses_classifiers()
+    monty.load_trove_licenses_classifiers()
 )
 spdx_licenses_identifiers = strategies.sampled_from(
-        list(monty.load_spdx_licenses_info())
+    list(monty.load_spdx_licenses_info())
 )
 projects_names_delimiters = '.-_'
-projects_names_alphabet = strategies.sampled_from(ascii_alphanumeric
-                                                  + projects_names_delimiters)
+projects_names_alphabet = strategies.sampled_from(
+    ascii_alphanumeric + projects_names_delimiters
+)
 
 
 def project_name_valid(project_name: str) -> bool:
-    return not any(project_name.startswith(delimiter)
-                   or project_name.endswith(delimiter)
-                   for delimiter in projects_names_delimiters)
+    return not any(
+        project_name.startswith(delimiter) or project_name.endswith(delimiter)
+        for delimiter in projects_names_delimiters
+    )
 
 
-projects_names = (strategies.text(alphabet=projects_names_alphabet,
-                                  min_size=2,
-                                  max_size=100)
-                  .filter(project_name_valid))
+projects_names = strategies.text(
+    alphabet=projects_names_alphabet, min_size=2, max_size=100
+).filter(project_name_valid)
 versions_parts = strategies.integers(0, 100)
-versions = (strategies.tuples(versions_parts, versions_parts, versions_parts)
-            .map(partial(map, str))
-            .map('.'.join))
-dependencies_versions = strategies.fixed_dictionaries({'python': versions,
-                                                       'rust': versions})
+versions = strategies.tuples(
+    versions_parts, versions_parts, versions_parts
+).map(lambda parts: '.'.join(map(str, parts)))
+dependencies_versions = strategies.fixed_dictionaries(
+    {'python': versions, 'rust': versions}
+)
 optional_settings = {
     monty.TROVE_LICENSE_CLASSIFIER_KEY: trove_licenses_classifiers,
     'min_version_of': dependencies_versions,
@@ -64,14 +63,17 @@ required_settings = {
     'project': projects_names,
     'version': versions,
 }
-settings = strategies.fixed_dictionaries({**required_settings,
-                                          **optional_settings})
+settings = strategies.fixed_dictionaries(
+    {**required_settings, **optional_settings}
+)
 templates_directories_paths = strategies.builds(tempfile.mkdtemp)
 template_repositories_names = strategies.sampled_from(
-        ['lycantropos/monty-cpp-python-template',
-         'lycantropos/monty-cpython-pypy-template',
-         'lycantropos/monty-python-c-api-template',
-         'lycantropos/monty-rust-python-template',
-         'lycantropos/monty-rust-template']
+    [
+        'lycantropos/monty-cpp-python-template',
+        'lycantropos/monty-cpython-pypy-template',
+        'lycantropos/monty-python-c-api-template',
+        'lycantropos/monty-rust-python-template',
+        'lycantropos/monty-rust-template',
+    ]
 )
 temporary_directories = strategies.builds(tempfile.TemporaryDirectory)
