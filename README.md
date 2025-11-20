@@ -1,18 +1,19 @@
 monty
 =====
 
-[![](https://github.com/lycantropos/monty/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/lycantropos/monty/actions/workflows/ci.yml "Github Actions")
+[![](https://github.com/lycantropos/monty/workflows/CI/badge.svg)](https://github.com/lycantropos/monty/actions/workflows/ci.yml "Github Actions")
 [![](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
 [![](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
-[![](https://badge.fury.io/py/montemplate.svg)](https://badge.fury.io/py/montemplate "PyPI")
+[![](https://badge.fury.io/py/monty.svg)](https://badge.fury.io/py/monty "PyPI")
 
-In what follows `python` is an alias for `python3.6` or `pypy3.6`
-or any later version (`python3.7`, `pypy3.7` and so on).
+In what follows `python` is an alias for `python3.10` or `pypy3.10`
+or any later version (`python3.11`, `pypy3.11` and so on).
 
 Installation
 ------------
 
 Install the latest `pip` & `setuptools` packages versions
+
 ```bash
 python -m pip install --upgrade pip setuptools
 ```
@@ -20,6 +21,7 @@ python -m pip install --upgrade pip setuptools
 ### User
 
 Download and install the latest stable version from `PyPI` repository
+
 ```bash
 python -m pip install --upgrade monty
 ```
@@ -27,31 +29,16 @@ python -m pip install --upgrade monty
 ### Developer
 
 Download the latest version from `GitHub` repository
+
 ```bash
 git clone https://github.com/lycantropos/monty.git
 cd monty
 ```
 
-Install dependencies
-```bash
-python -m pip install -r requirements.txt
-```
-
 Install
-```bash
-python setup.py install
-```
 
-Usage
------
-
-After updating `setting.yml` with related information
 ```bash
-monty -o output lycantropos/monty-cpython-pypy-template
-```
-All available options can be obtained with
-```bash
-monty --help
+python -m pip install -e '.'
 ```
 
 Development
@@ -61,56 +48,50 @@ Development
 
 #### Preparation
 
-Install
-[bump2version](https://github.com/c4urself/bump2version#installation).
+Install [bump-my-version](https://github.com/callowayproject/bump-my-version#installation).
 
-#### Pre-release
+#### Release
 
 Choose which version number category to bump following [semver
 specification](http://semver.org/).
 
 Test bumping version
+
 ```bash
-bump2version --dry-run --verbose $CATEGORY
+bump-my-version bump --dry-run --verbose $CATEGORY
 ```
 
 where `$CATEGORY` is the target version number category name, possible
 values are `patch`/`minor`/`major`.
 
 Bump version
+
 ```bash
-bump2version --verbose $CATEGORY
-```
-
-This will set version to `major.minor.patch-alpha`. 
-
-#### Release
-
-Test bumping version
-```bash
-bump2version --dry-run --verbose release
-```
-
-Bump version
-```bash
-bump2version --verbose release
+bump-my-version bump --verbose $CATEGORY
 ```
 
 This will set version to `major.minor.patch`.
 
 ### Running tests
 
-Install dependencies
+#### Plain
+
+Install with dependencies
+
 ```bash
-python -m pip install -r requirements-tests.txt
+python -m pip install -e '.[tests]'
 ```
 
-Plain
+Run
+
 ```bash
 pytest
 ```
 
-Inside `Docker` container:
+#### `Docker` container
+
+Run
+
 - with `CPython`
   ```bash
   docker-compose --file docker-compose.cpython.yml up
@@ -120,7 +101,10 @@ Inside `Docker` container:
   docker-compose --file docker-compose.pypy.yml up
   ```
 
-`Bash` script:
+#### `Bash` script
+
+Run
+
 - with `CPython`
   ```bash
   ./run-tests.sh
@@ -135,7 +119,10 @@ Inside `Docker` container:
   ./run-tests.sh pypy
   ```
 
-`PowerShell` script:
+#### `PowerShell` script
+
+Run
+
 - with `CPython`
   ```powershell
   .\run-tests.ps1

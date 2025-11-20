@@ -6,6 +6,9 @@ spdx_license_identifier: "MIT"
 project: monty
 version: 3.0.0
 min_version_of:
-  python: 3.6
-max_version_of:
   python: 3.10
+  pypy: 3.10
+  rust: 1.71.0
+max_version_of:
+  python: 3.14
+  pypy: 3.10

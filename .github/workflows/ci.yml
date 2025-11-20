@@ -1,4 +1,4 @@
-name: CI
+name: 'CI'
 
 on:
   push:
@@ -10,43 +10,72 @@ on:
       - 'master'
 
 jobs:
-  test:
-    name: 'Test'
-    strategy:
-      matrix:
-        python_version: ['3.6', '3.7', '3.8', '3.9', '3.10', 'pypy-3.7']
-        os: ['ubuntu', 'macos', 'windows']
-      fail-fast: true
-    runs-on: ${{ matrix.os }}-latest
+  check:
+    name: 'Check'
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
+      - name: 'Setup Python'
+        uses: actions/setup-python@v6
         with:
-          submodules: true
-      - name: 'Setup Python ${{ matrix.python_version }}'
-        uses: actions/setup-python@v3
+          python-version: '3.14'
+      - name: 'Install pre-commit'
+        run: python -m pip install -U pre-commit
+      - name: 'Run pre-commit'
+        run: pre-commit run --all-files
+
+  test:
+    name: 'Test'
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        python_version: [ '3.10', '3.11', '3.12', '3.13', '3.14' ]
+        platform: [
+          {
+            os: 'macos-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'ubuntu-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x86'
+          },
+        ]
+        include:
+          - python_version: 'pypy-3.10'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.10'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.10'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v5
+      - name: 'Setup Python'
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python_version }}
-      - name: 'Install packaging tools'
-        run: python -m pip install -U pip setuptools
+          architecture: ${{ matrix.platform.python_architecture }}
       - name: 'Install coverage dependencies'
-        run: python -m pip install -U coverage
-      - name: 'Install dependencies'
-        run: python -m pip install -r requirements.txt
-      - name: 'Install tests dependencies'
-        run: python -m pip install -r requirements-tests.txt
+        run: python -m pip install -U coverage[toml]
       - name: 'Run doctests'
         run: >
           coverage run -m doctest README.md
           && coverage run --append -m pytest --doctest-modules --ignore=tests
       - name: 'Run tests'
         run: coverage run --append -m pytest
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.API_GITHUB_ACCESS_TOKEN }}
       - name: 'Collect coverage'
         run: coverage xml
       - name: 'Upload coverage'
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
         continue-on-error: true
@@ -58,7 +87,7 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - name: '_'
-        run: echo "Predeploy step"
+        run: echo "Pre-deploy step"
 
   build:
     name: 'Build'
@@ -66,42 +95,94 @@ jobs:
     needs: pre-deploy
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v3
-        with:
-          submodules: true
+        uses: actions/checkout@v5
       - name: 'Setup Python'
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v6
       - name: 'Install packaging tools'
         run: python -m pip install -U build pip setuptools wheel
-      - name: 'Install dependencies'
-        run: python -m pip install -r requirements.txt
       - name: 'Build'
         run: python -m build --sdist --wheel
       - name: 'Upload'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: dist
 
-  deploy:
-    name: 'Deploy'
-    environment: release
+  test-distributions:
+    name: 'Test distributions'
+    runs-on: ${{ matrix.platform.os }}
     needs: build
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: [ '3.10', '3.11', '3.12', '3.13', '3.14' ]
+        platform: [
+          {
+            os: 'macos-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'ubuntu-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x86'
+          },
+        ]
+        include:
+          - python_version: 'pypy-3.10'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.10'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.10'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v3
+      - name: 'Setup Python'
+        uses: actions/setup-python@v6
         with:
-          submodules: true
+          python-version: ${{ matrix.python_version }}
+          architecture: ${{ matrix.platform.python_architecture }}
       - name: 'Download distributions'
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist
-      - name: 'Collected dists'
-        run: tree dist
-      - name: 'PyPI upload'
-        uses: pypa/gh-action-pypi-publish@v1.5.0
+      - name: 'Install from distributions'
+        run: >
+          python -m pip install --find-links=dist --no-deps
+          "${REPOSITORY_NAME//-/_}"
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+
+  deploy:
+    name: 'Deploy to PyPI'
+    environment: release
+    needs: test-distributions
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Download distributions'
+        uses: actions/download-artifact@v6
         with:
-          packages_dir: dist
+          merge-multiple: true
+          path: dist
+          pattern: dist-*
+      - name: 'Upload to Test PyPI'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: ${{ github.actor == 'dependabot[bot]' }}
+        continue-on-error: true
+      - name: 'Upload to PyPI'
+        if: github.actor != 'dependabot[bot]'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
           password: ${{ secrets.PYPI_API_TOKEN }}

@@ -8,28 +8,18 @@ import posixpath
 import shutil
 import sys
 import warnings
+from collections.abc import Callable, Container, Iterable, Iterator
 from datetime import datetime
 from functools import partial
 from itertools import filterfalse, tee
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Container,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-    cast,
-)
+from typing import Any, cast
 from zipfile import ZipFile
 
 import click
 import requests
 from jinja2 import StrictUndefined, Template
-from strictyaml import (
+from strictyaml import (  # type: ignore[import-untyped]
     Map,
     MapPattern,
     Optional as OptionalKey,
@@ -37,17 +27,17 @@ from strictyaml import (
     Str,
     load,
 )
-from strictyaml.yamllocation import YAMLChunk
+from strictyaml.yamllocation import YAMLChunk  # type: ignore[import-untyped]
 
-__version__ = "3.0.0"
-FULL_NAME_KEY = "full_name"
-GITHUB_API_ENDPOINT = "https://api.github.com"
-TROVE_LICENSE_CLASSIFIER_KEY = "trove_license_classifier"
-TROVE_CLASSIFIER_SEPARATOR = " :: "
-VERSION_PATTERN = r"\d+\.\d+(\.\d+)?(-(alpha|beta))?"
+__version__ = '3.0.0'
+FULL_NAME_KEY = 'full_name'
+GITHUB_API_ENDPOINT = 'https://api.github.com'
+TROVE_LICENSE_CLASSIFIER_KEY = 'trove_license_classifier'
+TROVE_CLASSIFIER_SEPARATOR = ' :: '
+VERSION_PATTERN = r'\d+\.\d+(\.\d+)?(-(alpha|beta))?'
 
 
-class NonEmptySingleLineStr(Str):
+class NonEmptySingleLineStr(Str):  # type: ignore[misc]
     def validate_scalar(self, chunk: YAMLChunk) -> str:
         contents = (
             chunk.contents
@@ -56,87 +46,90 @@ class NonEmptySingleLineStr(Str):
         )
         if not contents:
             chunk.expecting_but_found(
-                "when expecting non-empty string", contents
+                'when expecting non-empty string', contents
             )
         elif len(contents.splitlines()) > 1:
             chunk.expecting_but_found(
-                "when expecting single-line string", contents
+                'when expecting single-line string', contents
             )
         return contents
 
 
-class SpdxLicenseIdentifier(Str):
+class SpdxLicenseIdentifier(Str):  # type: ignore[misc]
     def __init__(self, identifiers: Container[str]) -> None:
         self.identifiers = identifiers
 
-    def validate_scalar(self, chunk: YAMLChunk) -> Dict[str, Any]:
+    def validate_scalar(self, chunk: YAMLChunk) -> str:
         contents = chunk.contents
+        assert isinstance(contents, str), contents
         if contents not in self.identifiers:
             chunk.expecting_but_found(
-                "when expecting SPDX license identifier", contents
+                'when expecting SPDX license identifier', contents
             )
         return contents
 
 
-class TroveLicenseClassifier(Str):
+class TroveLicenseClassifier(Str):  # type: ignore[misc]
     def __init__(self, identifiers: Container[str]) -> None:
         self.classifiers = identifiers
 
     def validate_scalar(self, chunk: YAMLChunk) -> str:
         contents = chunk.contents
+        assert isinstance(contents, str), contents
         if contents not in self.classifiers:
             chunk.expecting_but_found(
-                "when expecting " "license Trove classifier", contents
+                'when expecting license Trove classifier', contents
             )
         return contents
 
 
 @click.command()
 @click.option(
-    "--version",
-    "-v",
+    '--version',
+    '-v',
     is_flag=True,
-    help="Displays script version information and exits.",
+    help='Displays script version information and exits.',
 )
 @click.option(
-    "--settings-path",
-    "-s",
-    default="settings.yml",
-    help="Path (absolute or relative) to settings "
+    '--settings-path',
+    '-s',
+    default='settings.yml',
+    help='Path (absolute or relative) to settings '
     '(defaults to "settings.yml").',
 )
 @click.option(
-    "--templates-dir",
-    default=".templates",
-    help="Path (absolute or relative) to templates.",
+    '--templates-dir',
+    default='.templates',
+    help='Path (absolute or relative) to templates.',
 )
 @click.option(
-    "--output-dir",
-    "-o",
+    '--output-dir',
+    '-o',
     default=None,
-    help="Path (absolute or relative) to output directory "
-    "(defaults to current working directory).",
+    help='Path (absolute or relative) to output directory '
+    '(defaults to current working directory).',
 )
 @click.option(
-    "--overwrite",
+    '--overwrite',
     is_flag=True,
-    help="Overwrites files if output directory exists.",
+    help='Overwrites files if output directory exists.',
 )
 @click.option(
-    "--github-access-token",
-    "-g",
-    envvar="GITHUB_ACCESS_TOKEN",
+    '--github-access-token',
+    '-g',
+    envvar='GITHUB_ACCESS_TOKEN',
     default=None,
-    help="Personal access token " "that can be used to access the GitHub API.",
+    help='Personal access token that can be used to access the GitHub API.',
 )
-@click.argument("template-repo")
+@click.argument('template-repo')
 def main(
+    *,
     version: bool,
     settings_path: str,
     templates_dir: str,
     output_dir: str | None,
     overwrite: bool,
-    github_access_token: Optional[str],
+    github_access_token: str | None,
     template_repo: str,
 ) -> None:
     """Generates project from template."""
@@ -165,34 +158,29 @@ def main(
     for file_path, new_file_path in paths_pairs:
         if not overwrite and os.path.exists(new_file_path):
             raise click.BadOptionUsage(
-                "overwrite",
-                'Trying to overwrite "{path}", '
-                'but no "--overwrite" flag was set.'.format(
-                    path=new_file_path
-                ),
+                'overwrite',
+                f'Trying to overwrite "{new_file_path}", '
+                'but no "--overwrite" flag was set.',
             )
         render_file(file_path, new_file_path, renderer=renderer)
 
 
 def sync_template(
-    templates_path: str,
-    repository_path: str,
-    github_access_token: Optional[str],
+    templates_path: str, repository_path: str, github_access_token: str | None
 ) -> str:
     base_template_dir = os.path.join(templates_path, repository_path)
     latest_commits_info = requests.get(
-        GITHUB_API_ENDPOINT
-        + '/repos/{}/commits?per_page=1'.format(repository_path),
+        GITHUB_API_ENDPOINT + f'/repos/{repository_path}/commits?per_page=1',
         headers=_to_github_headers(github_access_token),
     ).json()
     _validate_github_response(latest_commits_info)
     (latest_commit_info,) = latest_commits_info
-    latest_commit_datetime_string = latest_commit_info["commit"]["committer"][
-        "date"
+    latest_commit_datetime_string = latest_commit_info['commit']['committer'][
+        'date'
     ]
     latest_commit_timestamp = calendar.timegm(
         datetime.strptime(
-            latest_commit_datetime_string, "%Y-%m-%dT%H:%M:%SZ"
+            latest_commit_datetime_string, '%Y-%m-%dT%H:%M:%SZ'
         ).utctimetuple()
     )
     os.makedirs(base_template_dir, exist_ok=True)
@@ -214,26 +202,26 @@ def sync_template(
 
 
 def load_settings(
-    settings_path: str, github_access_token: Optional[str]
-) -> Dict[str, str]:
+    settings_path: str, github_access_token: str | None
+) -> dict[str, str]:
     spdx_licenses_info = load_spdx_licenses_info()
     trove_licenses_classifiers = load_trove_licenses_classifiers()
     settings_schema = Map(
         {
-            "description": NonEmptySingleLineStr(),
-            "dockerhub_login": NonEmptySingleLineStr(),
-            "email": NonEmptySingleLineStr(),
-            "github_login": NonEmptySingleLineStr(),
-            "project": Regex(r"\w+([\.-]\w+)*"),
-            "spdx_license_identifier": SpdxLicenseIdentifier(
+            'description': NonEmptySingleLineStr(),
+            'dockerhub_login': NonEmptySingleLineStr(),
+            'email': NonEmptySingleLineStr(),
+            'github_login': NonEmptySingleLineStr(),
+            'project': Regex(r'\w+([\.-]\w+)*'),
+            'spdx_license_identifier': SpdxLicenseIdentifier(
                 spdx_licenses_info.keys()
             ),
-            "version": Regex(VERSION_PATTERN),
+            'version': Regex(VERSION_PATTERN),
             OptionalKey(FULL_NAME_KEY): NonEmptySingleLineStr(),
-            OptionalKey("max_version_of"): MapPattern(
+            OptionalKey('max_version_of'): MapPattern(
                 NonEmptySingleLineStr(), Regex(VERSION_PATTERN)
             ),
-            OptionalKey("min_version_of"): MapPattern(
+            OptionalKey('min_version_of'): MapPattern(
                 NonEmptySingleLineStr(), Regex(VERSION_PATTERN)
             ),
             OptionalKey(TROVE_LICENSE_CLASSIFIER_KEY): TroveLicenseClassifier(
@@ -242,20 +230,20 @@ def load_settings(
         }
     )
     settings = load(
-        Path(settings_path).read_text(encoding="utf-8"), schema=settings_schema
+        Path(settings_path).read_text(encoding='utf-8'), schema=settings_schema
     ).data
-    spdx_license_info = spdx_licenses_info[settings["spdx_license_identifier"]]
-    spdx_license_name = spdx_license_info["name"]
-    if spdx_license_info["is_deprecated"]:
+    assert isinstance(settings, dict), settings
+    spdx_license_info = spdx_licenses_info[settings['spdx_license_identifier']]
+    spdx_license_name = spdx_license_info['name']
+    if spdx_license_info['is_deprecated']:
         warnings.warn(
-            'License "{name}" is marked as deprecated by SPDX.'.format(
-                name=spdx_license_name
-            ),
+            f'License "{spdx_license_name}" is marked as deprecated by SPDX.',
             DeprecationWarning,
+            stacklevel=1,
         )
-    settings["spdx_license_name"] = spdx_license_name
+    settings['spdx_license_name'] = spdx_license_name
     if TROVE_LICENSE_CLASSIFIER_KEY not in settings:
-        osi_approved = spdx_license_info["osi_approved"]
+        osi_approved = spdx_license_info['osi_approved']
         candidates = [
             classifier
             for classifier in trove_licenses_classifiers
@@ -268,17 +256,17 @@ def load_settings(
                 )
                 and (
                     (
-                        "OSI Approved"
-                        == classifier.split(
+                        classifier.split(
                             TROVE_CLASSIFIER_SEPARATOR, maxsplit=2
                         )[1]
+                        == 'OSI Approved'
                     )
                     if osi_approved
                     else (
-                        "OSI Approved"
-                        != classifier.split(
+                        classifier.split(
                             TROVE_CLASSIFIER_SEPARATOR, maxsplit=2
                         )[1]
+                        != 'OSI Approved'
                     )
                 )
             )
@@ -288,37 +276,32 @@ def load_settings(
         except ValueError:
             if not candidates:
                 warnings.warn(
-                    "No Trove classifier found "
-                    'for license "{name}", '
-                    "in case of need specify it explicitly "
-                    'with "{key}" key in settings.'.format(
-                        name=spdx_license_name,
-                        key=TROVE_LICENSE_CLASSIFIER_KEY,
-                    ),
+                    'No Trove classifier found '
+                    f'for license "{spdx_license_name}", '
+                    'in case of need specify it explicitly '
+                    f'with "{TROVE_LICENSE_CLASSIFIER_KEY}" key in settings.',
                     UserWarning,
+                    stacklevel=1,
                 )
             else:
                 warnings.warn(
-                    "Found {count} conflicting Trove classifiers "
-                    'for license "{name}", '
-                    "in case of need specify it explicitly "
-                    'with "{key}" key in settings.'.format(
-                        count=len(candidates),
-                        name=spdx_license_name,
-                        key=TROVE_LICENSE_CLASSIFIER_KEY,
-                    ),
+                    f'Found {len(candidates)} conflicting Trove classifiers '
+                    f'for license "{spdx_license_name}", '
+                    'in case of need specify it explicitly '
+                    f'with "{TROVE_LICENSE_CLASSIFIER_KEY}" key in settings.',
                     UserWarning,
+                    stacklevel=1,
                 )
         else:
             settings[TROVE_LICENSE_CLASSIFIER_KEY] = trove_license_classifier
-    dockerhub_login = settings["dockerhub_login"]
-    github_login = settings["github_login"]
+    dockerhub_login = settings['dockerhub_login']
+    github_login = settings['github_login']
     if FULL_NAME_KEY not in settings:
         settings[FULL_NAME_KEY] = (
             load_github_user(github_login, access_token=github_access_token)[
-                "name"
+                'name'
             ]
-            or load_dockerhub_user(dockerhub_login)["full_name"]
+            or load_dockerhub_user(dockerhub_login)['full_name']
         )
     return settings
 
@@ -334,7 +317,7 @@ def files_paths(path: str) -> Iterator[str]:
 
 
 def is_binary_file(path: str) -> bool:
-    with open(path, mode="rb") as file:
+    with open(path, mode='rb') as file:
         return is_binary_string(file.read(1024))
 
 
@@ -351,10 +334,10 @@ def is_binary_string(
 def load_dockerhub_user(
     login: str,
     *,
-    base_url: str = "https://hub.docker.com",
-    version: str = "v2",
-) -> Dict[str, Any]:
-    users_method_url = partial(api_method_url, "users")
+    base_url: str = 'https://hub.docker.com',
+    version: str = 'v2',
+) -> dict[str, Any]:
+    users_method_url = partial(api_method_url, 'users')
     response = load_user(
         login=login,
         base_url=base_url,
@@ -365,22 +348,22 @@ def load_dockerhub_user(
         response.raise_for_status()
     except requests.HTTPError as error:
         error_message = (
-            'Invalid login: "{login}". '
-            'Not found via API request to "{url}".'.format(
-                login=login, url=response.url
-            )
+            f'Invalid login: "{login}". '
+            f'Not found via API request to "{response.url}".'
         )
         raise ValueError(error_message) from error
     else:
-        return response.json()
+        result = response.json()
+        assert isinstance(result, dict), result
+        return result
 
 
 def load_github_repository(name: str, destination_path: str) -> None:
-    archive_url = "https://github.com/{}/archive/master.zip".format(name)
+    archive_url = f'https://github.com/{name}/archive/master.zip'
     archive_bytes_stream = io.BytesIO(requests.get(archive_url).content)
     with ZipFile(archive_bytes_stream) as zip_file:
         for resource_info in zip_file.infolist():
-            is_directory = resource_info.filename[-1] == "/"
+            is_directory = resource_info.filename[-1] == '/'
             if is_directory:
                 continue
             top_level_directory_name = Path(resource_info.filename).parts[0]
@@ -394,71 +377,69 @@ def load_github_user(
     login: str,
     *,
     base_url: str = GITHUB_API_ENDPOINT,
-    access_token: Optional[str] = None,
-) -> Dict[str, Any]:
-    users_method_url = partial(api_method_url, "users")
+    access_token: str | None = None,
+) -> dict[str, Any]:
+    users_method_url = partial(api_method_url, 'users')
     response = load_user(
         login=login,
         base_url=base_url,
-        version="",
+        version='',
         users_method_url=users_method_url,
         headers=_to_github_headers(access_token),
     )
     user = response.json()
     _validate_github_response(user)
+    assert isinstance(user, dict), user
     return user
 
 
 def load_spdx_licenses_info(
-    json_url: str = "https://raw.githubusercontent.com"
-    "/spdx/license-list-data/master"
-    "/json/licenses.json",
-) -> Dict[str, Any]:
+    json_url: str = 'https://raw.githubusercontent.com'
+    '/spdx/license-list-data/master'
+    '/json/licenses.json',
+) -> dict[str, Any]:
     response = requests.get(json_url)
     response.raise_for_status()
-    raw_licenses = response.json()["licenses"]
+    raw_licenses = response.json()['licenses']
     result = {
-        raw_license["licenseId"]: {
-            "name": raw_license["name"],
-            "is_deprecated": raw_license["isDeprecatedLicenseId"],
-            "osi_approved": raw_license["isOsiApproved"],
+        raw_license['licenseId']: {
+            'name': raw_license['name'],
+            'is_deprecated': raw_license['isDeprecatedLicenseId'],
+            'osi_approved': raw_license['isOsiApproved'],
         }
         for raw_license in raw_licenses
     }
-    assert len(result) == len(
-        raw_licenses
-    ), "License identifiers should be unique"
+    assert len(result) == len(raw_licenses), (
+        'License identifiers should be unique'
+    )
     return result
 
 
 def load_trove_licenses_classifiers(
-    *,
-    url: str = "https://pypi.org/pypi?%3Aaction=list_classifiers",
-) -> List[str]:
+    *, url: str = 'https://pypi.org/pypi?%3Aaction=list_classifiers'
+) -> list[str]:
     with requests.get(url, stream=True) as response:
         return [
             line
             for line in response.iter_lines(decode_unicode=True)
             if (
                 line.split(TROVE_CLASSIFIER_SEPARATOR, maxsplit=1)[0]
-                == "License"
+                == 'License'
             )
         ]
 
 
-def _to_github_headers(
-    access_token: Optional[str],
-) -> Optional[Dict[str, str]]:
+def _to_github_headers(access_token: str | None) -> dict[str, str] | None:
     return (
         None
         if access_token is None
-        else {"Authorization": "token {}".format(access_token)}
+        else {'Authorization': f'token {access_token}'}
     )
 
 
 def _validate_github_response(response: Any) -> None:
-    if isinstance(response, dict) and "message" in response:
-        raise ValueError(response["message"])
+    if isinstance(response, dict) and 'message' in response:
+        raise ValueError(response['message'])
 
 
 def load_user(
@@ -467,7 +448,7 @@ def load_user(
     base_url: str,
     version: str,
     users_method_url: Callable[..., str],
-    headers: Optional[Dict[str, str]] = None,
+    headers: dict[str, str] | None = None,
 ) -> requests.Response:
     users_url = users_method_url(base_url=base_url, version=version)
     user_url = urljoin(users_url, login)
@@ -478,7 +459,7 @@ def load_user(
         return session.get(user_url)
 
 
-def render(source: str, settings: Dict[str, str]) -> str:
+def render(source: str, settings: dict[str, str]) -> str:
     try:
         return Template(
             source,
@@ -494,7 +475,7 @@ def render_file(
     source_path: str,
     destination_path: str,
     *,
-    encoding: str = "utf-8",
+    encoding: str = 'utf-8',
     renderer: Callable[[str], str],
 ) -> None:
     os.makedirs(os.path.dirname(destination_path), exist_ok=True)
@@ -518,7 +499,7 @@ def replace_files_paths(
     source_path: str,
     destination: str,
     renderer: Callable[[str], str],
-) -> Iterator[Tuple[str, str]]:
+) -> Iterator[tuple[str, str]]:
     def replace_file_path(file_path: str) -> str:
         root, file_name = os.path.split(file_path)
         new_file_name = renderer(file_name)
@@ -527,10 +508,12 @@ def replace_files_paths(
         return os.path.join(new_root, new_file_name)
 
     original_paths, source_paths = tee(paths)
-    yield from zip(original_paths, map(replace_file_path, source_paths))
+    yield from zip(
+        original_paths, map(replace_file_path, source_paths), strict=False
+    )
 
 
 urljoin = posixpath.join
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

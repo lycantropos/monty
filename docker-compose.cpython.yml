@@ -10,10 +10,8 @@ services:
     image: lycantropos/monty-cpython:3.0.0
     volumes:
       - ./monty:/opt/monty/monty
-      - ./pytest.ini:/opt/monty/pytest.ini
+      - ./pyproject.toml:/opt/monty/pyproject.toml
       - ./README.md:/opt/monty/README.md
-      - ./requirements-tests.txt:/opt/monty/requirements-tests.txt
-      - ./requirements.txt:/opt/monty/requirements.txt
       - ./setup.py:/opt/monty/setup.py
       - ./tests:/opt/monty/tests
     entrypoint: pytest
