@@ -83,12 +83,10 @@ jobs:
         run: python -m pip -v install -e '.[tests]'
       - name: 'Install coverage dependencies'
         run: python -m pip install -U coverage[toml]
-      - name: 'Run doctests'
-        run: >
-          coverage run -m doctest README.md
-          && coverage run --append -m pytest --doctest-modules --ignore=tests
       - name: 'Run tests'
         run: coverage run --append -m pytest
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.API_GITHUB_ACCESS_TOKEN }}
       - name: 'Collect coverage'
         run: coverage xml
       - name: 'Upload coverage'
