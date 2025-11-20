@@ -28,7 +28,7 @@ jobs:
         run: python -m pip -v install -e '.'
       - name: 'Check Python metadata'
         run: |
-          PROJECT_DESCRIPTION=$(python -c "import importlib.metadata;print(importlib.metadata.metadata('monty')['summary'])")
+          PROJECT_DESCRIPTION=$(python -c "import importlib.metadata;print(importlib.metadata.metadata('montemplate')['summary'])")
           MODULE_DOCSTRING=$(python -c "import monty.monty as module; assert module.__doc__ is not None; print(module.__doc__)")
           if [[ $PROJECT_DESCRIPTION != "$MODULE_DOCSTRING" ]]; then
             echo "Python project description should be equal to module docstring, but found \"$PROJECT_DESCRIPTION\" != \"$MODULE_DOCSTRING\".";
@@ -169,7 +169,7 @@ jobs:
           path: dist
       - name: 'Install from distributions'
         run: >
-          python -m pip install --find-links=dist --no-deps "monty"
+          python -m pip install --find-links=dist --no-deps "montemplate"
 
   deploy:
     name: 'Deploy to PyPI'
