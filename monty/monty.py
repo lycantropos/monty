@@ -3,6 +3,7 @@
 
 import calendar
 import io
+import json
 import os
 import posixpath
 import shutil
@@ -11,13 +12,14 @@ import warnings
 from collections.abc import Callable, Container, Iterable, Iterator
 from datetime import datetime
 from functools import partial
+from http import HTTPMethod
 from itertools import filterfalse, tee
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Final, cast
 from zipfile import ZipFile
 
 import click
-import requests
+import httpx
 from jinja2 import StrictUndefined, Template
 from strictyaml import (  # type: ignore[import-untyped]
     Map,
@@ -29,7 +31,11 @@ from strictyaml import (  # type: ignore[import-untyped]
 )
 from strictyaml.yamllocation import YAMLChunk  # type: ignore[import-untyped]
 
+import monty
+
 __version__ = '3.0.0'
+
+
 FULL_NAME_KEY = 'full_name'
 GITHUB_API_ENDPOINT = 'https://api.github.com'
 TROVE_LICENSE_CLASSIFIER_KEY = 'trove_license_classifier'
@@ -83,6 +89,9 @@ class TroveLicenseClassifier(Str):  # type: ignore[misc]
         return contents
 
 
+OVERWRITE_FLAG_NAME = '--overwrite'
+
+
 @click.command()
 @click.option(
     '--version',
@@ -94,8 +103,7 @@ class TroveLicenseClassifier(Str):  # type: ignore[misc]
     '--settings-path',
     '-s',
     default='settings.yml',
-    help='Path (absolute or relative) to settings '
-    '(defaults to "settings.yml").',
+    help='Path (absolute or relative) to settings.',
 )
 @click.option(
     '--templates-dir',
@@ -110,7 +118,7 @@ class TroveLicenseClassifier(Str):  # type: ignore[misc]
     '(defaults to current working directory).',
 )
 @click.option(
-    '--overwrite',
+    OVERWRITE_FLAG_NAME,
     is_flag=True,
     help='Overwrites files if output directory exists.',
 )
@@ -159,8 +167,8 @@ def main(
         if not overwrite and os.path.exists(new_file_path):
             raise click.BadOptionUsage(
                 'overwrite',
-                f'Trying to overwrite "{new_file_path}", '
-                'but no "--overwrite" flag was set.',
+                f'Trying to overwrite {new_file_path!r}, '
+                f'but no {OVERWRITE_FLAG_NAME!r} flag was set.',
             )
         render_file(file_path, new_file_path, renderer=renderer)
 
@@ -169,7 +177,7 @@ def sync_template(
     templates_path: str, repository_path: str, github_access_token: str | None
 ) -> str:
     base_template_dir = os.path.join(templates_path, repository_path)
-    latest_commit_info_response = requests.get(
+    latest_commit_info_response = httpx.get(
         GITHUB_API_ENDPOINT + f'/repos/{repository_path}/commits?per_page=1',
         headers=_to_github_headers(github_access_token),
     )
@@ -238,7 +246,7 @@ def load_settings(
     spdx_license_name = spdx_license_info['name']
     if spdx_license_info['is_deprecated']:
         warnings.warn(
-            f'License "{spdx_license_name}" is marked as deprecated by SPDX.',
+            f'License {spdx_license_name!r} is marked as deprecated by SPDX.',
             DeprecationWarning,
             stacklevel=1,
         )
@@ -278,18 +286,18 @@ def load_settings(
             if not candidates:
                 warnings.warn(
                     'No Trove classifier found '
-                    f'for license "{spdx_license_name}", '
+                    f'for license {spdx_license_name!r}, '
                     'in case of need specify it explicitly '
-                    f'with "{TROVE_LICENSE_CLASSIFIER_KEY}" key in settings.',
+                    f'with {TROVE_LICENSE_CLASSIFIER_KEY!r} key in settings.',
                     UserWarning,
                     stacklevel=1,
                 )
             else:
                 warnings.warn(
                     f'Found {len(candidates)} conflicting Trove classifiers '
-                    f'for license "{spdx_license_name}", '
+                    f'for license {spdx_license_name!r}, '
                     'in case of need specify it explicitly '
-                    f'with "{TROVE_LICENSE_CLASSIFIER_KEY}" key in settings.',
+                    f'with {TROVE_LICENSE_CLASSIFIER_KEY!r} key in settings.',
                     UserWarning,
                     stacklevel=1,
                 )
@@ -347,10 +355,10 @@ def load_dockerhub_user(
     )
     try:
         response.raise_for_status()
-    except requests.HTTPError as error:
+    except httpx.HTTPError as error:
         error_message = (
-            f'Invalid login: "{login}". '
-            f'Not found via API request to "{response.url}".'
+            f'Invalid login: {login!r}. '
+            f'Not found via API request to {response.url!r}.'
         )
         raise ValueError(error_message) from error
     else:
@@ -361,7 +369,7 @@ def load_dockerhub_user(
 
 def load_github_repository(name: str, destination_path: str) -> None:
     archive_url = f'https://github.com/{name}/archive/master.zip'
-    archive_bytes_stream = io.BytesIO(requests.get(archive_url).content)
+    archive_bytes_stream = io.BytesIO(httpx.get(archive_url).content)
     with ZipFile(archive_bytes_stream) as zip_file:
         for resource_info in zip_file.infolist():
             is_directory = resource_info.filename[-1] == '/'
@@ -394,11 +402,11 @@ def load_github_user(
 
 
 def load_spdx_licenses_info(
-    json_url: str = 'https://raw.githubusercontent.com'
-    '/spdx/license-list-data/master'
-    '/json/licenses.json',
+    json_url: str = (
+        'https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json'
+    ),
 ) -> dict[str, Any]:
-    response = requests.get(json_url)
+    response = httpx.get(json_url)
     response.raise_for_status()
     raw_licenses = response.json()['licenses']
     result = {
@@ -415,18 +423,33 @@ def load_spdx_licenses_info(
     return result
 
 
+CACHE_DIRECTORY_PATH: Final[Path] = Path.home() / '.cache' / monty.__name__
+CACHE_DIRECTORY_PATH.mkdir(exist_ok=True, parents=True)
+
+
 def load_trove_licenses_classifiers(
     *, url: str = 'https://pypi.org/pypi?%3Aaction=list_classifiers'
 ) -> list[str]:
-    with requests.get(url, stream=True) as response:
-        return [
+    cache_file_path = CACHE_DIRECTORY_PATH / 'trove_licenses_classifiers.json'
+    try:
+        result = json.loads(cache_file_path.read_bytes())
+        if isinstance(result, list) and all(
+            isinstance(element, str) for element in result
+        ):
+            return result
+    except (OSError, TypeError, ValueError):
+        pass
+    with httpx.stream(HTTPMethod.GET, url) as response:
+        result = [
             line
-            for line in response.iter_lines(decode_unicode=True)
+            for line in response.iter_lines()
             if (
                 line.split(TROVE_CLASSIFIER_SEPARATOR, maxsplit=1)[0]
                 == 'License'
             )
         ]
+    cache_file_path.write_text(json.dumps(result))
+    return result
 
 
 def _to_github_headers(access_token: str | None) -> dict[str, str] | None:
@@ -444,16 +467,11 @@ def fetch_user_request(
     version: str,
     users_method_url: Callable[..., str],
     headers: dict[str, str] | None = None,
-) -> requests.Response:
+) -> httpx.Response:
     users_url = users_method_url(base_url=base_url, version=version)
     user_url = urljoin(users_url, login)
-    session = requests.Session()
-    if headers is not None:
-        session.headers.update(headers)
-    with session as session:
-        response = session.get(user_url)
-        response.raise_for_status()
-    return response
+    with httpx.Client(headers=headers) as client:
+        return client.get(user_url).raise_for_status()
 
 
 def render(source: str, settings: dict[str, str]) -> str:
