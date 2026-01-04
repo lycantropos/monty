@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
+import httpx
 import pytest
-import requests.exceptions
 from hypothesis import given
 
 from monty import monty
@@ -18,7 +18,7 @@ def test_load_valid_dockerhub_user(dockerhub_login: str) -> None:
 
 @given(strategies.invalid_dockerhub_logins)
 def test_load_invalid_dockerhub_user(invalid_dockerhub_login: str) -> None:
-    with pytest.raises(requests.exceptions.HTTPError) as error_ctx:
+    with pytest.raises(httpx.HTTPStatusError) as error_ctx:
         monty.load_dockerhub_user(invalid_dockerhub_login)
 
     assert error_ctx.value.response.status_code == HTTPStatus.NOT_FOUND
@@ -39,7 +39,7 @@ def test_load_valid_github_user(
 def test_load_invalid_github_user(
     github_access_token: Secured, invalid_github_login: str
 ) -> None:
-    with pytest.raises(requests.exceptions.HTTPError) as error_ctx:
+    with pytest.raises(httpx.HTTPStatusError) as error_ctx:
         monty.load_github_user(
             invalid_github_login, access_token=github_access_token.value
         )

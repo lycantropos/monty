@@ -50,8 +50,8 @@ repos:
           - "hypothesis>=6.148.2,<7.0"
           - "jinja2>=3.0.3,<4.0"
           - "pytest>=9.0.1,<10.0"
+          - "setuptools"
           - "strictyaml>=1.7.3,<2.0.0"
-          - "types-requests"
           - "types-setuptools"
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.407
@@ -63,6 +63,6 @@ repos:
           - "hypothesis>=6.148.2,<7.0"
           - "jinja2>=3.0.3,<4.0"
           - "pytest>=9.0.1,<10.0"
+          - "setuptools"
           - "strictyaml>=1.7.3,<2.0.0"
-          - "types-requests"
           - "types-setuptools"
