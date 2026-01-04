@@ -1,16 +1,14 @@
-monty
-=====
+# monty
 
-[![](https://github.com/lycantropos/monty/workflows/CI/badge.svg)](https://github.com/lycantropos/monty/actions/workflows/ci.yml "Github Actions")
-[![](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
-[![](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
-[![](https://badge.fury.io/py/monty.svg)](https://badge.fury.io/py/monty "PyPI")
+[![Github Actions](https://github.com/lycantropos/monty/workflows/CI/badge.svg)](https://github.com/lycantropos/monty/actions/workflows/ci.yml "Github Actions")
+[![Codecov](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
+[![License](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
+[![PyPI](https://badge.fury.io/py/monty.svg)](https://badge.fury.io/py/monty "PyPI")
 
 In what follows `python` is an alias for `python3.10` or `pypy3.10`
 or any later version (`python3.11`, `pypy3.11` and so on).
 
-Installation
-------------
+## Installation
 
 Install the latest `pip` & `setuptools` packages versions
 
@@ -41,8 +39,7 @@ Install
 python -m pip install -e '.'
 ```
 
-Usage
------
+## Usage
 
 After updating `setting.yml` with related information
 
@@ -56,8 +53,7 @@ All available options can be obtained with
 monty --help
 ```
 
-Development
------------
+## Development
 
 ### Bumping version
 
@@ -108,10 +104,13 @@ pytest
 Run
 
 - with `CPython`
+
   ```bash
   docker-compose --file docker-compose.cpython.yml up
   ```
+
 - with `PyPy`
+
   ```bash
   docker-compose --file docker-compose.pypy.yml up
   ```
@@ -121,15 +120,19 @@ Run
 Run
 
 - with `CPython`
+
   ```bash
   ./run-tests.sh
   ```
+
   or
+
   ```bash
   ./run-tests.sh cpython
   ```
 
 - with `PyPy`
+
   ```bash
   ./run-tests.sh pypy
   ```
@@ -139,14 +142,19 @@ Run
 Run
 
 - with `CPython`
+
   ```powershell
   .\run-tests.ps1
   ```
+
   or
+
   ```powershell
   .\run-tests.ps1 cpython
   ```
+
 - with `PyPy`
+
   ```powershell
   .\run-tests.ps1 pypy
   ```
