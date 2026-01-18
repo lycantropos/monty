@@ -369,7 +369,11 @@ def load_dockerhub_user(
 
 def load_github_repository(name: str, destination_path: str) -> None:
     archive_url = f'https://github.com/{name}/archive/master.zip'
-    archive_bytes_stream = io.BytesIO(httpx.get(archive_url).content)
+    archive_bytes_stream = io.BytesIO(
+        httpx.get(archive_url, follow_redirects=True)
+        .raise_for_status()
+        .content
+    )
     with ZipFile(archive_bytes_stream) as zip_file:
         for resource_info in zip_file.infolist():
             is_directory = resource_info.filename[-1] == '/'
