@@ -3,7 +3,7 @@
 [![Github Actions](https://github.com/lycantropos/monty/workflows/CI/badge.svg)](https://github.com/lycantropos/monty/actions/workflows/ci.yml "Github Actions")
 [![Codecov](https://codecov.io/gh/lycantropos/monty/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/monty "Codecov")
 [![License](https://img.shields.io/github/license/lycantropos/monty.svg)](https://github.com/lycantropos/monty/blob/master/LICENSE "License")
-[![PyPI](https://badge.fury.io/py/monty.svg)](https://badge.fury.io/py/monty "PyPI")
+[![PyPI](https://badge.fury.io/py/montemplate.svg)](https://badge.fury.io/py/montemplate "PyPI")
 
 In what follows `python` is an alias for `python3.10` or `pypy3.10`
 or any later version (`python3.11`, `pypy3.11` and so on).
